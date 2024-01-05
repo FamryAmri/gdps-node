@@ -20,10 +20,10 @@ module.exports.eventlevel = (type=1, offset=0, limit=10) => {
 
 // type 27
 module.exports.sentlevel = (offset=0,limit=10) => {
-    var leftjoin = "LEFT JOIN accounts ON accounts.username = level.owner LEFT JOIN songs ON songs.ID = level.song LEFT JOIN scores ON scores.ID = accounts.ID"
+    var leftjoin = "LEFT JOIN level ON ratedLevel.levelID = level.ID LEFT JOIN accounts ON accounts.username = level.owner LEFT JOIN songs ON songs.ID = level.song LEFT JOIN scores ON scores.ID = accounts.ID"
     var level = db.select('ratedLevel', {
         target: ['distinct levelID, level.*','accounts.ID AS accountID', 'scores.UID', 'songs.name AS songname', 'songs.author', 'songs.authorid', 'songs.link', 'songs.size'],
-        state: `${leftjoin} LEFT JOIN level ON ratedLevel.levelID = level.ID WHERE level.stars = 0 ORDER BY ratedLevel.ID DESC,level.createon LIMIT ${limit} OFFSET ${offset}*${limit}`
+        state: `${leftjoin} WHERE level.stars = 0 ORDER BY ratedLevel.ID DESC,level.createon LIMIT ${limit} OFFSET ${offset}*${limit}`
     }).all;
 
     var count = db.select('ratedLevel', {

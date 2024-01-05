@@ -253,7 +253,6 @@ module.exports.levelsearch = (params) => {
         // allstate
         var allstate = "";
         if (state.length > 0) allstate = ` WHERE ${state.join(" AND ")}`
-        console.log(state);
 
         // in querying on database
         var level = db.select('level', {
@@ -324,11 +323,11 @@ module.exports.promoteLevel = (id=0, pro={}) => {
     if (pro.feature || pro.legend || pro.epic || pro.mythic) {
         var feature = 0, epic = 0, legend = 0, mythic = 0;
     
-        if (pro.mythic || pro.mythic > 0) mythic = 1;
-        else if (pro.legend || pro.legend > 0) legend = 1;
-        else if (pro.epic || pro.epic > 0) epic = 1;
-        else if (pro.feature || pro.feature > 0) feature = 1;
-        
+        if (pro.mythic && pro.mythic > 0) mythic = 1;
+        else if (pro.legend && pro.legend > 0) legend = 1;
+        else if (pro.epic && pro.epic > 0) epic = 1;
+        else if (pro.feature && pro.feature > 0) feature = 1;
+
         rate.set ('featured', feature);
         rate.set ('epic', epic);
         if (pro.verifycoins) rate.set('Gcoins', pro.verifycoins);
@@ -340,11 +339,13 @@ module.exports.promoteLevel = (id=0, pro={}) => {
     return true;
 }
 
-module.exports.rateLevel = (id=0, lvlid=0, starRate=1, feature=0) => {
-    var role = getUserPerms(id, 'hasMod');
+module.exports.rateLevel = (id=0, lvlid=0, starRate=1, feature=0, suggest=true) => {
     var modlevel = 0;
-
-    if (role) modlevel = getrole(role)['modlevel'];
+    
+    if (suggest) {
+        var role = getUserPerms(id, 'hasMod');
+        if (role) modlevel = getrole(role)['modlevel'];
+    }
 
     var modrate = 1;
     var guestrate = 0;
@@ -361,7 +362,7 @@ module.exports.rateLevel = (id=0, lvlid=0, starRate=1, feature=0) => {
     if (feature==4) rate.mythic = 1;
     else if (feature==3) rate.legend = 1;
     else if (feature==2) rate.epic = 1;
-    else rate.feature = 1; 
+    else rate.feature = feature; 
 
     if (modlevel > 0) this.promoteLevel(lvlid, rate);
 
@@ -455,16 +456,13 @@ module.exports.dailyLevel = (type=1) => {
     
 
     var left = tmr - Date.now();
-    left/=1000;
-
-    current.push (Math.floor(left));
     
     if (left < 0) {
         var up = db.update('eventlevel').target("EID", current[1]);
         up.set('status', 0);
         if (current[1]!==0) up.save();
         current = this.currentEventLevel(type).split(",");
-
+        
         var ontime = new Date();
         var newday = 7 - (ontime.getDay()+1);
         
@@ -475,8 +473,10 @@ module.exports.dailyLevel = (type=1) => {
         tools.timeholder(typename,tmr,current[1]);
 
         left = tmr - Date.now();
-        current.push(left);
     }
+    
+    left/=1000;
+    current.push (Math.floor(left));
 
     return current.join(",");
 }

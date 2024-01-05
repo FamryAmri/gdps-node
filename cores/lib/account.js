@@ -38,7 +38,7 @@ module.exports.accountExport = (id=0) => {
     return data;
 } 
 
-module.exports.verifyaccount = (username, password) => {
+module.exports.verifypassByusername = (username, password) => {
     var account = user.userexists(username);
     if (!account) return false;
     var chk = tools.verifypassword(account.password, password);
@@ -46,7 +46,7 @@ module.exports.verifyaccount = (username, password) => {
     return chk;
 }
 
-module.exports.verifyaccount2 = (username, gjp2) => {
+module.exports.verifygjp2Byusername = (username, gjp2) => {
     var account = user.userexists(username);
     if (!account) return false;
 
@@ -62,13 +62,12 @@ module.exports.createaccount = (username,password,email) => {
     if (user.userexists(username)) return false;
 
     var time = Date.now();
-    var target = ['username','password','email','secretGJP','secretGJP2', 'createon','saveon'];
+    var target = ['username','password','email','secretGJP2', 'createon','saveon'];
 
-    var gjp = tools.secretGJP(password);
     var gjp2 = tools.secretGJP2(password);
     var hash = tools.hashpassword(password);
 
-    var push = [username, hash, email, gjp, gjp2, time, time];
+    var push = [username, hash, email, gjp2, time, time];
 
     var count = db.select("accounts").count;
     if (count==0) {
@@ -89,4 +88,36 @@ module.exports.saveonupdate = (id=0) => {
     var update = db.update('accounts').target("ID", id);
     update.set("saveon", Date.now());
     return true;
+}
+
+module.exports.verifygjp = (id, string) => {
+    var pass = db.select('accounts', {
+        target: ['username', 'password'],
+        state: `WHERE ID = ${id}`
+    });
+
+    if (pass.count==0) return false;
+
+    var password = pass.all[0]['password'];
+    var username = pass.all[0]['username'];
+
+    string = tools.secretGJP(string,true);
+
+    if (tools.verifypassword(password,string)) return true;
+    return false;
+}
+
+module.exports.verifygjp2 = (id, string) => {
+    var pass = db.select('accounts', {
+        target: ['username', 'password'],
+        state: `WHERE ID = ${id}`
+    });
+
+    if (pass.count==0) return false;
+
+    var password = pass.all[0]['secretGJP2'];
+    var username = pass.all[0]['username'];
+
+    if (tools.verifypassword(password,string)) return true;
+    return false;
 }

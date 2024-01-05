@@ -28,8 +28,9 @@ app.post("/uploadGJLevel:v.php", levels.uploads);
 app.post("/getGJLevels:v.php", levels.getlevels);
 app.post("/downloadGJLevel:v.php", levels.download);
 app.post('/deleteGJLevelUser:v.php', levels.deletelevel);
-app.post("/suggestGJStars:v.php", levels.ratingLevel);
+app.post("/suggestGJStars:v.php", levels.suggestLevel);
 app.post("/rateGJDemon:v.php", levels.rateDemonLevel);
+app.post("/rateGJStars:v.php",levels.ratingLevel);
 
 app.post('/getGJDailyLevel.php', levels.getDaily);
 app.post('/getGJGauntlets:v.php', levels.getGauntlets);

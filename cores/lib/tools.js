@@ -6,7 +6,6 @@ const xor = new XOR();
 const fs = require ('fs');
 const path = require('path');
 const db = require ('../database/database');
-const { time } = require("console");
 
 module.exports.datetime = () => {
     var time = new Date();

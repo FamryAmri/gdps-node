@@ -10,7 +10,7 @@ sentmessage = done                      message list = done                     
 remove message = done                   user search = done
 
 ldboard global = done                   ldboard friends = done                  ldboard cp = not yet            ldboard relative = not yet
-update user info = done                 get user info = done                    search user = not yet           
+update user info = done                 get user info = done                    search user = done           
 user post list = done                   user post create = done                 user post delete = done
 
 level list likes = done                 level owner list = done                 level list sent = done
@@ -25,11 +25,9 @@ level dual player list = done           level coins = done                      
 level no rated = done                   level original = done                   level complete list = not yet
 level uncompleted list = not yet        level delete = done
 
-likes system = done
-
 chest rewards = done                    diamonds quest = done
 
-songs = done                            cron = not yet                          tools = not yet
+songs = done                            cron = done                             tools = not yet
 account manage = not yet                caches = done                           moderator = done
 admins = not yet                        database menu = not yet                 api = not yet
 

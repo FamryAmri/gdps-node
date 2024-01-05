@@ -1,6 +1,7 @@
 const tools = require ('../../cores/lib/social');
 const usert = require ('../../cores/lib/user');
 const tool = require ('../../cores/lib/tools');
+const acc = require ('../../cores/lib/account');
 
 var acceptReq = (req, res) => {
     var reqq = req.body.requestID || 0;
@@ -9,6 +10,13 @@ var acceptReq = (req, res) => {
     var id2 = req.body.targetAccountID || 0;
 
     if (id==0||id2==0) return res.send("-1");
+
+    var pass = false;
+
+    if (req.body.gjp) if (acc.verifygjp(id,req.body.gjp)) pass = true;
+    if (req.body.gjp2) if (acc.verifygjp2(id,req.body.gjp2)) pass = true;
+
+    if (!pass) return res.send("-1");
     if (req.body.requestID==0 || !tools.existsReqID(reqq)) reqq = tools.getReqID(id, id2);
 
     tools.acceptReq(id, id2);
@@ -19,8 +27,16 @@ var acceptReq = (req, res) => {
 var addreq = (req, res) => {
 
     if (!req.body.accountID || !req.body.toAccountID) return res.send("-1");
-    var id = req.body.accountID;
+    var id = req.body.accountID || 0;
     var id2 = req.body.toAccountID;
+
+    var pass = false;
+
+    if (id==0) return res.send("-1");
+    if (req.body.gjp) if (acc.verifygjp(id,req.body.gjp)) pass = true;
+    if (req.body.gjp2) if (acc.verifygjp2(id,req.body.gjp2)) pass = true;
+
+    if (!pass) return res.send("-1");
     
     var infos = usert.getUserInfo(id2);    
     if (infos.allowFriendReq==1 || tools.checkblock(id, id2)) return res.send("-1");
@@ -67,6 +83,14 @@ var getreq = (req, res) => {
 var remFriend = (req, res) => {
     var id = req.body.accountID || 0;
     var id2 = req.body.targetAccountID || 0;
+
+    var pass = false;
+
+    if (id==0) return res.send("-1");
+    if (req.body.gjp) if (acc.verifygjp(id,req.body.gjp)) pass = true;
+    if (req.body.gjp2) if (acc.verifygjp2(id,req.body.gjp2)) pass = true;
+
+    if (!pass) return res.send("-1");
   
     if (tools.removeFriendReq(id, id2)) return res.send("1");
     return res.send("-1");
@@ -79,6 +103,13 @@ var sentmessage = (req, res) => {
     var message = req.body.body;
 
     if (id==0||id2==0) return res.send("-1");
+
+    var pass = false;
+
+    if (req.body.gjp) if (acc.verifygjp(id,req.body.gjp)) pass = true;
+    if (req.body.gjp2) if (acc.verifygjp2(id,req.body.gjp2)) pass = true;
+
+    if (!pass) return res.send("-1");
 
     var u2 = usert.getUserInfo(id2);
 
@@ -143,6 +174,14 @@ var removemessage = (req, res) => {
     var msgID = req.body.messageID || 0;
 
     if (msgID==0||id==0) return res.send("-1");
+
+    var pass = false;
+
+    if (req.body.gjp) if (acc.verifygjp(id,req.body.gjp)) pass = true;
+    if (req.body.gjp2) if (acc.verifygjp2(id,req.body.gjp2)) pass = true;
+
+    if (!pass) return res.send("-1");
+
     if (messages=='') tools.removeMsg(msgID); 
 
     return res.send("1");
@@ -151,8 +190,16 @@ var removemessage = (req, res) => {
 var blockuser = (req, res) => {
     if (!req.body.targetAccountID) return res.send("-1");
 
-    var id = req.body.accountID;
-    var id2 = req.body.targetAccountID;
+    var id = req.body.accountID || 0;
+    var id2 = req.body.targetAccountID || 0;
+
+    var pass = false;
+
+    if (id==0) return res.send("-1");
+    if (req.body.gjp) if (acc.verifygjp(id,req.body.gjp)) pass = true;
+    if (req.body.gjp2) if (acc.verifygjp2(id,req.body.gjp2)) pass = true;
+
+    if (!pass) return res.send("-1");
 
     if (tools.checkblock(id, id2)) return res.send("-1");
     tools.blockuser(id, id2);
@@ -163,8 +210,16 @@ var blockuser = (req, res) => {
 var unblockuser = (req, res) => {
     if (!req.body.targetAccountID) return res.send("-1");
 
-    var id = req.body.accountID;
+    var id = req.body.accountID || 0;
     var id2 = req.body.targetAccountID;
+
+    var pass = false;
+
+    if (id==0) return res.send("-1");
+    if (req.body.gjp) if (acc.verifygjp(id,req.body.gjp)) pass = true;
+    if (req.body.gjp2) if (acc.verifygjp2(id,req.body.gjp2)) pass = true;
+
+    if (!pass) return res.send("-1");
 
     var check = tools.checkblockfirst(id, id2);
     if (!check) return res.send("-1");
@@ -177,9 +232,17 @@ var sentcomment = (req, res) => {
     if (!req.body.accountID) return res.send("-1");
 
     var comment = req.body.comment || '';
-    var id = req.body.accountID;
+    var id = req.body.accountID || 0;
     var levelid = req.body.levelID || 0;
     var percent = req.body.percent || 0;
+
+    var pass = false;
+
+    if (id==0) return res.send("-1");
+    if (req.body.gjp) if (acc.verifygjp(id,req.body.gjp)) pass = true;
+    if (req.body.gjp2) if (acc.verifygjp2(id,req.body.gjp2)) pass = true;
+
+    if (!pass) return res.send("-1");
 
     tools.createcomment(levelid, id, comment, percent);
 

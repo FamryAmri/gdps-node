@@ -6,6 +6,7 @@ global.chestrewards = config.chestrewards;
 global.quests = config.quests;
 global.modrate = config.modrate;
 global.payloadlimit = config.payloadlimit;
+global.database = config.databasepath
 
 // System Configuration
 global.system = {
@@ -14,5 +15,6 @@ global.system = {
 
 require('./cores/database/database');
 require('./cores/server');
+require ('./cores/cron');
 
 // you can add some code if you want too..

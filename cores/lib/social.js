@@ -234,18 +234,18 @@ module.exports.getreqlist = (id, getsent=0, offset=0) => {
             getreq = 'twoID';
         }
         
-        var user = user.getUsers(p[o][getreq]);
+        var users = user.getUsers(p[o][getreq]);
         
         var isNew = 0;
-        tmp.username = user.getNameByUID(user.scores['UID']);
-        tmp.uid = user.info['UID'];
-        tmp.icon = tools.icons(user.icons);
-        tmp.color1 = user.icons['iconPColor'];
-        tmp.color2 = user.icons['iconSColor'];
-        tmp.color3 = user.icons['iconTColor'];
-        tmp.iconT = user.icons['iconPrimary'];
-        tmp.special = user.icons['special'];
-        tmp.id = user.scores['ID'];
+        tmp.username = user.getNameByUID(users.scores['UID']);
+        tmp.uid = users.info['UID'];
+        tmp.icon = tools.icons(users.icons);
+        tmp.color1 = users.icons['iconPColor'];
+        tmp.color2 = users.icons['iconSColor'];
+        tmp.color3 = users.icons['iconTColor'];
+        tmp.iconT = users.icons['iconPrimary'];
+        tmp.special = users.icons['special'];
+        tmp.id = users.scores['ID'];
         tmp.request = request;
         tmp.comment = p[o]['whisper'];
         tmp.isNew = isNew;

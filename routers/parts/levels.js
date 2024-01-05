@@ -2,9 +2,20 @@ const tools = require ('../../cores/lib/level');
 const tool = require ('../../cores/lib/tools');
 const user = require ('../../cores/lib/user');
 const misc = require ('../../cores/lib/misc');
+const acc = require ('../../cores/lib/account');
 
 const uploads = (req, res) => {
     if (!req.body.levelString || req.body.levelString=="") return res.send("-1");
+
+    var pass = false;
+    var id = req.body.accountID || 0;
+
+    if (id==0) return res.send("-1");
+ 
+    if (req.body.gjp) if (acc.verifygjp(id,req.body.gjp)) pass = true;
+    if (req.body.gjp2) if (acc.verifygjp2(id,req.body.gjp2)) pass = true;
+
+    if (!pass) return res.send("-1");
 
     var newid = "0";
     if (req.body.levelID=="0") newid = tools.createLevel(req.body);
@@ -32,7 +43,7 @@ const getlevels = (req, res) => {
 
         var uid = lvl['UID'] || 0;
         var id = lvl['accountID'] || 0;
-        var likes = lvl['dislikes'] - lvl['likes'];
+        var likes = lvl['likes'];
 
         levelmulstr.push ({
             "ID": lvl["ID"],
@@ -45,7 +56,7 @@ const getlevels = (req, res) => {
         if (gameVersion==22) {
             if (lvl['legend']==1) epic=2;
             if (lvl['mythic']==1) epic=3;
-        }
+        } else if (lvl['legend']==1||lvl['mythic']==1) epic = 1;
 
         var inside = [
             1, lvl["ID"], 2, lvl["name"], 5, lvl["version"],
@@ -156,7 +167,7 @@ var download = (req, res) => {
     if (req.body.gameVersion && req.body.gameVersion==22) {
         if (level['legend']==1) epic=2;
         if (level['mythic']==1) epic=3;
-    }
+    } else if (level['legend']==1||level['mythic']==1) epic = 1;
 
     var readydownload = [
         1, level["ID"], 2, levelname, 3, desc, 4, leveldata,
@@ -192,6 +203,15 @@ var download = (req, res) => {
 var deletelevel = (req, res) => {
     if (!req.body.levelID) return res.send("-1");
 
+    var aid = req.body.accountID || 0;
+    var pass = false;
+
+    if (aid==0) return res.send("-1");
+    if (req.body.gjp) if (acc.verifygjp(aid,req.body.gjp)) pass = true;
+    if (req.body.gjp2) if (acc.verifygjp2(aid,req.body.gjp2)) pass = true;
+
+    if (!pass) return res.send("-1");
+
     var id = req.body.levelID;
 
     tools.deleteLevel(id);
@@ -204,7 +224,35 @@ var ratingLevel = (req, res) => {
     var id = req.body.accountID;
     var levelid = req.body.levelID || 0;
     var stars = req.body.stars || 0;
+    var feature = req.body.feature || 0;
+    
+    var pass = false;
+
+    if (id==0) return res.send("-1");
+    if (req.body.gjp) if (acc.verifygjp(id,req.body.gjp)) pass = true;
+    if (req.body.gjp2) if (acc.verifygjp2(id,req.body.gjp2)) pass = true;
+
+    if (!pass) return res.send("-1");
+
+    tools.rateLevel(id,levelid,stars,feature,false);
+    return res.send("1");
+}
+
+var suggestLevel = (req, res) => {
+    if (!req.body.accountID) return res.send("-1");
+
+    var id = req.body.accountID;
+    var levelid = req.body.levelID || 0;
+    var stars = req.body.stars || 0;
     var feature = req.body.feature || 0;    
+
+    var pass = false;
+
+    if (id==0) return res.send("-1");
+    if (req.body.gjp) if (acc.verifygjp(id,req.body.gjp)) pass = true;
+    if (req.body.gjp2) if (acc.verifygjp2(id,req.body.gjp2)) pass = true;
+
+    if (!pass) return res.send("-1");
 
     tools.rateLevel(id,levelid,stars,feature);
     return res.send("1");
@@ -216,6 +264,14 @@ var rateDemonLevel = (req, res) => {
     var id = req.body.accountID;
     var levelid = req.body.levelID || 0;
     var demon = req.body.rating || 3;
+
+    var pass = false;
+
+    if (id==0) return res.send("-1");
+    if (req.body.gjp) if (acc.verifygjp(id,req.body.gjp)) pass = true;
+    if (req.body.gjp2) if (acc.verifygjp2(id,req.body.gjp2)) pass = true;
+
+    if (!pass) return res.send("-1");
 
     tools.rateDemon(id,levelid,demon);
     return res.send("1");
@@ -274,6 +330,6 @@ var getpacks = (req, res) => {
 }
 
 module.exports = {
-    uploads, getlevels, download, deletelevel, ratingLevel,
-    rateDemonLevel, getDaily, getGauntlets, getpacks
+    uploads, getlevels, download, deletelevel, suggestLevel,
+    rateDemonLevel, ratingLevel, getDaily, getGauntlets, getpacks
 }

@@ -7,6 +7,14 @@ var updateuser = (req, res) => {
 
     if (!req.body.accountID) return res.send("-1");
     if (!req.body.userName || !req.body.secret) return res.send("-1");
+
+    var pass = false;
+
+    if (data.accountID==0) return res.send("-1");
+    if (req.body.gjp) if (acc.verifygjp(id,req.body.gjp)) pass = true;
+    if (req.body.gjp2) if (acc.verifygjp2(id,req.body.gjp2)) pass = true;
+
+    if (!pass) return res.send("-1");
     
     var username = req.body.userName.toLowerCase();
     var secret = req.body.secret;
@@ -73,7 +81,7 @@ var getuser = (req, res) => {
         22, users.icons['iconShip'], 23, users.icons['iconBall'], 24, users.icons['iconUFO'], 25, 
         users.icons['iconWave'], 26, users.icons['iconRobot'], 28, users.icons['iconOnGlow'], 43, users.icons['iconSpider'],
         47, users.icons['iconExplosion'], 53, users.icons['iconSwing'], 54, users.icons['iconJet'] || 1,
-        30, top, 16, targetuser, 31, friendstate, 44, users.info["x"], 45, users.info['twitch'], 29, 1, 49, modbadge
+        30, users.scores['top'], 16, targetuser, 31, friendstate, 44, users.info["x"], 45, users.info['twitch'], 29, 1, 49, modbadge
     ]
 
     var o1 = params.join(":");
@@ -85,6 +93,14 @@ var getuser = (req, res) => {
 var updateuserinfo = (req, res) => {
     if (!req.body.accountID) return res.send("-1");
     var data = req.body;
+
+    var pass = false;
+
+    if (data.accountID==0) return res.send("-1");
+    if (req.body.gjp) if (acc.verifygjp(id,req.body.gjp)) pass = true;
+    if (req.body.gjp2) if (acc.verifygjp2(id,req.body.gjp2)) pass = true;
+
+    if (!pass) return res.send("-1");
 
     data.uID = tools.getUidByID(data.accountID);
     if (!data.uID) return res.send("-1");

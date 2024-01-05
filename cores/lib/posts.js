@@ -1,10 +1,9 @@
-var db = require ('../database/database');
-var tools = require ('../functions');   
+var db = require ('../database/database'); 
 var sql = require('better-sqlite3')(db.sqlfile);
 
 module.exports.getposts = (id=0, offset=0) => {
     var posts = db.select('userpost', {
-        target: ["*", "(likes - dislikes) AS trueLikes"],
+        target: ["*"],
         state: `WHERE ID = ${id} LIMIT 10 OFFSET ${offset}*10`
     });
 
@@ -20,7 +19,7 @@ module.exports.getposts = (id=0, offset=0) => {
         for (let o = 0; o < posts.all.length; o++) {
             var post = posts.all[o];
 
-            arr.likes = post['trueLikes'] || 0;
+            arr.likes = post['likes'] || 0;
             arr.message = post['postmessage'];
             arr.whenPost = post['whenPost'];
             arr.postid = post['postID'] || 0;

@@ -1,5 +1,6 @@
 const misc = require ('../../cores/lib/misc');
 const tools = require ('../../cores/lib/tools');
+const acc = require ('../../cores/lib/account');
 
 var getuserscore = (req, res) => {
     var join = [];
@@ -24,6 +25,7 @@ var getuserscore = (req, res) => {
         ]
         join.push(push.join(":"));
     }
+    
     var output = join.join("|");
     return res.send(output);
 }
@@ -106,6 +108,14 @@ var getmod = (req, res) => {
     if (!req.body.accountID) return res.send("-1");
 
     var id = req.body.accountID;
+
+    var pass = false;
+
+    if (id==0) return res.send("-1");
+    if (req.body.gjp) if (acc.verifygjp(id,req.body.gjp)) pass = true;
+    if (req.body.gjp2) if (acc.verifygjp2(id,req.body.gjp2)) pass = true;
+
+    if (!pass) return res.send("-1");
 
     var getrole = misc.getUserPerms(id, "hasMod");
     if (getrole==0) return res.send("-1");

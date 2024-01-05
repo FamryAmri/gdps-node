@@ -23,11 +23,6 @@ const tablesSQLITE = [
                 params: "NOT NULL"
             },
             {
-                name: "secretGJP",
-                type: "TEXT",
-                params: "DEFAULT ''"
-            },
-            {
                 name: "secretGJP2",
                 type: "TEXT",
                 params: "DEFAULT ''"
@@ -573,6 +568,11 @@ const tablesSQLITE = [
                 name: "CPoints",
                 type: "INTEGER",
                 params: "DEFAULT 0",
+            },
+            {
+                name: 'top',
+                type: "INTEGER",
+                params: "DEFAULT 1"
             }
         ]
     },

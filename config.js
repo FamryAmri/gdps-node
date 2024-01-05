@@ -67,9 +67,13 @@ var mods = {
 // max payload to 10mb
 payloadlimit = '5mb';
 
+// "/database"
+databasepath = ['database','databases'];
+
 module.exports = {
     configuration,
     chestrewards,
     quests, mods,
-    payloadlimit
+    payloadlimit,
+    databasepath
 }
