@@ -1,0 +1,122 @@
+const tools = require ('../../cores/lib/user');
+const social = require ('../../cores/lib/social');
+
+var updateuser = (req, res) => {
+    var data = req.body;
+
+    if (!req.body.accountID) return res.send("-1");
+    if (!req.body.userName || !req.body.secret) return res.send("-1");
+    
+    var username = req.body.userName.toLowerCase();
+    var secret = req.body.secret;
+
+    data.uID = tools.getUidByID(data.accountID);
+    tools.updateUsers(data);
+
+    return res.send(`${data.uID}`);
+}
+
+var getuser = (req, res) => {
+    var data = req.body;
+    let extra = [];
+    
+    if (!req.body.accountID) return res.send("-1");
+    var name = tools.getNameByID(req.body.accountID);
+    var uid = tools.getUidByID(req.body.accountID);
+
+    var targetuser = req.body.targetAccountID;
+
+    var users = tools.getUsers(targetuser);
+
+    var allowmessage = users.info["allowMessage"];
+    var reqadd = users.info["allowFriendReq"];
+    var commentshow = users.info["showCommentHistory"];
+    var modbadge = 0;
+
+    var top = 1;
+
+    var friendstate = 0;
+
+    if (social.checkblock(req.body.accountID, targetuser)) return res.send("-1");
+
+    if (req.body.accountID == targetuser) {
+        var msgnew = social.newmsgcount(req.body.accountID);
+        var friendreqnew = social.check1ncomeReqCount(req.body.accountID);
+        var friends = social.check0utcomeReqCount(req.body.accountID);
+
+        extra = [
+            ":38", msgnew, 39, friendreqnew, 40, friends
+        ]
+    } else {
+
+        var checkreq = social.checkreq(req.body.accountID, targetuser);
+        var whisper = checkreq.whisper;
+        friendstate = checkreq.status;
+        var whenReq = checkreq.whenReq;
+
+        if (friendstate==3) extra = [
+            ":32", checkreq.id, 35, whisper, 37, whenReq
+        ]
+    }
+
+    if (!name) return res.send("-1");
+    var params = [
+        1, name, 2, uid, 13, users.scores["Gcoins"],
+        17, users.scores["Scoins"], 10, users.icons["iconPColor"], 11, users.icons["iconSColor"],
+        51, users.icons["iconTColor"], 3, users.scores["stars"], 46, users.scores['diamonds'],
+        52, users.scores['moons'], 4, users.scores["demons"], 8, users.scores["CPoints"], 18, 
+        allowmessage, 19, reqadd, 50, commentshow, 20, users.info['youtube'], 21, users.icons['iconCube'], 
+        22, users.icons['iconShip'], 23, users.icons['iconBall'], 24, users.icons['iconUFO'], 25, 
+        users.icons['iconWave'], 26, users.icons['iconRobot'], 28, users.icons['iconOnGlow'], 43, users.icons['iconSpider'],
+        47, users.icons['iconExplosion'], 53, users.icons['iconSwing'], 54, users.icons['iconJet'] || 1,
+        30, top, 16, targetuser, 31, friendstate, 44, users.info["x"], 45, users.info['twitch'], 29, 1, 49, modbadge
+    ]
+
+    var o1 = params.join(":");
+    var o2 = extra.join (":");
+
+    return res.send(`${o1}${o2}`);
+}
+
+var updateuserinfo = (req, res) => {
+    if (!req.body.accountID) return res.send("-1");
+    var data = req.body;
+
+    data.uID = tools.getUidByID(data.accountID);
+    if (!data.uID) return res.send("-1");
+
+    tools.updateUserInfo(data);
+    return res.send("1");
+}
+
+
+
+var getuserlist = (req, res) => {
+    var type = req.body.type || 0;
+    var id = req.body.accountID || 0;
+    var ready, list = [];
+
+    if (type==0) ready = social.getfriendlist(id);
+    else if (type==1) ready = social.getblocklist(id);
+
+    if (ready.length==0) return res.send("-2");
+
+    for (let i = 0; i < ready.length; i++) {
+        var isNew = 0;
+        var tmp = [
+            1, ready[i].username, 2, ready[i].uid, 9,
+            ready[i].icon, 10, ready[i].color1, 11, ready[i].color2,
+            14, ready[i].iconT, 15, ready[i].special, 16, ready[i].id, "18:0:41",
+            isNew
+        ]
+        list.push (tmp.join(":"));
+    }
+
+    var output = list.join("|");
+    return res.send(output);
+}
+
+module.exports = {
+    updateuser, updateuserinfo, getuser,
+    getuserlist,
+}

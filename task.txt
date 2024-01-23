@@ -1,0 +1,66 @@
+FULL TASK of GDPS-NODE
+
+login = done                            register = done
+backup = done                           load = done
+
+reqfriends = done                       acceptreq = done                        friendlist = done
+blocklist = done                        reqlist = done                          blockuser = done
+statusfriendstate = ongoing             unfriend = done                         unblockuser = done
+sentmessage = done                      message list = done                     read message = done
+remove message = done
+
+ldboard global = done                   ldboard friends = done                  ldboard cp = not yet            ldboard relative = not yet
+update user info = done                 get user info = done                    search user = not yet           
+user post list = done                   user post create = done                 user post delete = done
+
+level list likes = done                 level owner list = done                 level list sent = not yet
+level list downloads = done             level search id = done                  level gauntlets = not yet
+level list magic = done                 level search string = done              level map packs = not yet
+upload level = done                     download level = done                   delete level = not yet
+daily level = not yet                   weekly level = not yet                  level featured list = not test yet
+rating level = not yet                  rating level mod = not yet              level hall of fame = done
+level trending = not yet                level recent = not yet                  level friends = done
+level awarded = done                    level followed = not yet                level epic list = done
+level dual player list = done           level coins = done                      level song target = not yet
+level no rated = done                   level original = done                   level complete list = not yet
+level uncompleted list = not yet        level delete = done
+
+chest rewards = not yet                 diamonds quest = not yet
+
+songs = done                            cron = not yet                          tools = not yet
+account manage = not yet                caches = not yet                        moderator = not yet
+admins = not yet                        database menu = not yet                 api = not yet
+
+TOOLS CONTAIN - tips (user songs will convert normal quality (192kbps), if configuration set on it)
+
+copy level from gdps = not yet          login game = not yet                    download songs = not yet (synced to newgrounds)
+upload songs = not yet                  delete songs = not yet                  link songs set = not yet (always high quality)
+download and create songs = not yet     songs list = not yet                    youtube songs = not yet
+api keys = not yet                      comment colors (mod) = not yet          ...
+
+ACCOUNT MANAGEMENT
+
+change password = not yet               change username = not yet               change email (needed) = not yet
+discord link = not yet                  discord unlink = not yet                ...
+
+ADMINS TOOLS - tips (admin songs always high quality if want to set it low instead)
+
+database management = not yet           upload songs = not yet                  delete songs = not yet
+logs mods = not yet                     logs actions = not yet                  youtube songs = not yet
+edit songinfo = not yet                 storage info = not yet                  clear cache = not yet
+reset gdps = not yet                    backup data = not yet                   terminal = not yet
+rules = not yet                         webhooks = not yet
+
+API - every get (if possible)          
+
+Information:
+
+GDPS based on gdps cvolton (php), this gdps also based on js language. 
+also dataabse use sqlite3 which means can fast, secure than mysql, etc.
+
+easy setup 
+./setup (download modules, configuration setup)
+
+easy start
+node .
+

@@ -1,0 +1,21 @@
+{
+  "name": "gdps-node",
+  "version": "1.0.0",
+  "description": "Geometry Dash Private Server base in nodejs",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test"
+  },
+  "keywords": [
+    "gdps"
+  ],
+  "author": "famry",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "better-sqlite3": "^9.2.2",
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
+    "zlib": "^1.0.5"
+  }
+}
