@@ -16,7 +16,7 @@ global.config = {
     securekey: false
 }
 
-// System Configuration
+// System Configuration - just don't change it
 global.system = {
     mainpath: __dirname
 }
@@ -26,6 +26,3 @@ require('./cores/server');
 
 // you can add some code if you want too..
 
-const tools = require ("./cores/lib/account");
-tools.createaccount("famry", "123456", "famry@localhost");
-tools.createaccount("dexter", "123456", "dext@localhost");
