@@ -37,6 +37,8 @@ app.post("/uploadGJMessage:v.php", social.sentmessage);
 app.post("/downloadGJMessage:v.php", social.readmessage);
 app.post("/deleteGJMessages:v.php", social.removemessage);
 
+app.post ('/getGJRewards.php', misc.getchest);
+app.post ('/getGJChallenges.php', misc.getquest);
 app.post ("/getGJSongInfo.php", misc.getsong);
 app.all("/getAccountURL.php", (req, res)=>{
     var fullurl = `${req.protocol}://${req.hostname}`
