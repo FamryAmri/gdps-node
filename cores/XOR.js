@@ -1,3 +1,6 @@
+/*
+    Get from GDBrowser Script http://gdbrowser.com
+*/
 module.exports = class XOR {
     xor(str, key) { return String.fromCodePoint(...str.split('').map((char, i) => char.charCodeAt(0) ^ key.toString().charCodeAt(i % key.toString().length))) }
     encrypt(str, key = 37526) { return Buffer.from(this.xor(str, key)).toString('base64').replace(/./gs, c => ({'/': '_', '+': '-'}[c] || c)); }
