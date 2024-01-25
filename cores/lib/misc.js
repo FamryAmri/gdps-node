@@ -2,6 +2,8 @@ const db = require ('../database/database');
 const user = require ('./user');
 const social = require ('./social');
 const tools = require ('./tools');
+const XOR = require ('../XOR');
+const xor = new XOR();
 
 module.exports.leaderboard = (type='relative', id=accID, count=100) => {
     count = Number (count);
@@ -83,4 +85,132 @@ module.exports.getSongs = (id=0) => {
         download: s['link']
     }
     return songinfo;
+}
+
+module.exports.chestRewards = (id=0, open=0) => {
+    if (id==0) return [];
+    var prepare = db.select('chestcount', {
+        state: `WHERE ID=${id}`
+    });
+
+    var current = Date.now();
+    var check = {}
+
+    if (prepare.count==0) {
+        var newchest = db.insert('chestcount').target(['ID','bigTime', 'miniTime']);
+        newchest.add([id,current,current]);
+        newchest.save();
+
+        prepare.all = [{
+            bigTime: current,
+            miniTime: current
+        }]
+    }
+
+    check = prepare.all[0];
+    var miniTime = check.miniTime - current;
+    var bigTime = check.bigTime - current;
+
+    if (miniTime < 1) miniTime = 0;
+    if (bigTime < 1) bigTime = 0;
+
+    var bigOpen = check.bigOpen || 0;
+    var miniOpen = check.miniOpen || 0;
+    
+    var rewards = global.chestrewards;
+    
+    var miniSetTime = rewards.mini.setTime;
+    var bigSetTime = rewards.big.setTime;
+
+    if (open==1) {
+        miniOpen+=1;
+        if (miniTime > 1) return [];
+        var newtime = current + miniSetTime;
+
+        var update = db.update('chestcount').target('ID', id);
+        update.set('miniOpen', miniOpen);
+        update.set('miniTime', newtime);
+        update.save();
+
+        miniTime = newtime - current;
+    } else if (open==2) {
+        bigOpen+=1;
+        if (bigTime > 1) return [];
+        var newtime = current + bigSetTime;
+
+        var update = db.update('chestcount').target('ID', id);
+        update.set('bigOpen', bigOpen);
+        update.set('bigTime', newtime);
+        update.save();
+
+        bigTime = newtime - current;
+    }
+
+    var miniDm = rewards.mini.diamond;
+    var miniOrb = rewards.mini.orb;
+    var miniKey = rewards.mini.key;
+
+    var miniShard = rewards.mini.shard;
+    var mset = Math.floor(Math.random() * miniShard.length);
+
+    var bigDm = rewards.big.diamond;
+    var bigOrb = rewards.big.orb;
+    var bigKey = rewards.big.key;
+
+    var bigShard = rewards.big.shard;
+    var bset = Math.floor(Math.random() * bigShard.length);
+
+    return [
+        {
+            diamonds: tools.rand(miniDm.min, miniDm.max),
+            orbs: tools.rand(miniOrb.min, miniOrb.max),
+            keys: tools.rand(miniKey.min, miniKey.max),
+            shard: miniShard[mset] || 1,
+            open: miniOpen,
+            timeleft: Math.floor(miniTime/1000)
+        },
+        {
+            diamonds: tools.rand(bigDm.min, bigDm.max),
+            orbs: tools.rand(bigOrb.min, bigOrb.max),
+            keys: tools.rand(bigKey.min, bigKey.max),
+            shard: bigShard[bset] || 1,
+            open: bigOpen,
+            timeleft: Math.floor(bigTime/1000)
+        }
+    ]
+}
+
+module.exports.quests = () => {
+    var date = new Date();
+    var tmr = date.setHours(24,0,0,0);
+
+    var timeleft = tmr - Date.now();
+    timeleft = Math.floor(timeleft/1000);
+
+    var gdbefore = new Date('August 12, 2013'); // time release of geometry dash
+    var gdrelease = gdbefore.setHours(24);
+
+    var quest = global.quests;
+    
+    var makeiD = Date.now() - gdrelease;
+    makeiD = Math.floor(makeiD/10000);
+    var iD = [];
+
+    while (iD.length < 3) {
+        var questID = makeiD+iD.length;
+        var randQ = Math.floor (Math.random() * quest.length);
+
+        iD.push({
+            questID: questID,
+            type: quest[randQ]['type'],
+            name: quest[randQ]['name'],
+            amount: quest[randQ]['amount'],
+            rewards: quest[randQ]['rewards']
+        })
+    }
+
+    return {
+        timeleft: timeleft,
+        list: iD || []
+    }
 }
