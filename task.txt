@@ -25,7 +25,7 @@ level dual player list = done           level coins = done                      
 level no rated = done                   level original = done                   level complete list = not yet
 level uncompleted list = not yet        level delete = done
 
-chest rewards = not yet                 diamonds quest = not yet
+chest rewards = done                    diamonds quest = done
 
 songs = done                            cron = not yet                          tools = not yet
 account manage = not yet                caches = not yet                        moderator = not yet
