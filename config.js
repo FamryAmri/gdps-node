@@ -38,17 +38,6 @@ var chestrewards = {
     }
 }
 
-/*
-types:
-1 - orbs
-2 - coins
-3 - stars
-
-Collect 10 stars(3) to earn 10 diamonds as *rewards*, with an *amount* of stars required.
-*/
-
-const timereset = new Date();
-
 var quests = [
     {
         type: 3,
