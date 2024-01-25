@@ -231,6 +231,101 @@ const tablesSQLITE = [
         ]
     },
     {
+        name: "eventlevel",
+        intable: [
+            {
+                name: 'EID',
+                type: 'INTEGER',
+                params: 'PRIMARY KEY AUTOINCREMENT'
+            },
+            {
+                name: 'levelID',
+                type: 'INTEGER',
+                params: 'DEFAULT 0'
+            },
+            {
+                name: 'status',
+                type: 'INTEGER',
+                params: 'DEFAULT 0'
+            },
+            {
+                name: 'whenRelease',
+                type: 'INTEGER',
+                params: 'DEFAULT 0'
+            },
+            {
+                name: 'whenSet',
+                type: 'INTEGER',
+                params: 'DEFAULT 0'
+            }
+        ]
+    },
+    {
+        name: 'scorelevel',
+        intable: [
+            {
+                name: 'sID',
+                type: 'INTEGER',
+                params: 'PRIMARY KEY AUTOINCREMENT'
+            },
+            {
+                name: 'levelID',
+                type: 'INTEGER',
+                params: 'DEFAULT 0'
+            },
+            {
+                name: 'score',
+                type: 'TEXT',
+                params: 'DEFAULT "0:0"'
+            },
+        ]
+    },
+    {
+        name: 'levelCompleted',
+        intable: [
+            {
+                name: 'levelID',
+                type: 'INTEGER',
+                params: 'DEFAULT 0'
+            },
+            {
+                name: 'status',
+                type: 'INTEGER',
+                params: 'DEFAULT 0'
+            }
+        ]
+    },
+    {
+        name: 'chestcount',
+        intable: [
+            {
+                name: 'ID',
+                type: 'INTEGER',
+                params: 'DEFAULT 0'
+            },
+            {
+                name: 'miniTime',
+                type: 'INTEGER',
+                params: 'DEFAULT 1000',
+            },
+            {
+                name: 'bigTime',
+                type: 'INTEGER',
+                params: 'DEFAULT 1000'
+            },
+            {
+                name: 'miniOpen',
+                type: 'INTEGER',
+                params: 'DEFAULT 0'
+            },
+            {
+                name: 'bigOpen',
+                type: 'INTEGER',
+                params: 'DEFAULT 0'
+            }
+        ]
+    },
+    {
         name: "roles",
         intable: [
             {
