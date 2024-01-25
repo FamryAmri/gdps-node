@@ -54,6 +54,20 @@ module.exports.levelhash2 = (string) => {
     return this.sha1(string, key);
 }
 
+module.exports.chesthash = (string) => {
+    string = string.toString();
+    var key = "pC26fpYaQCtg";
+
+    return this.sha1(string, key);
+}
+
+module.exports.questhash = (string) => {
+    string = string.toString();
+    var key = "oC36fpYaPtdg";
+
+    return this.sha1(string, key);
+}
+
 module.exports.compressGzip = (data) => {
     const press = gzip.gzipSync(data);
     return press;
@@ -67,6 +81,16 @@ module.exports.decompressGzip = (data) => {
 module.exports.xorPass = (pass) => {
     var xor = new XOR();
     return xor.encrypt(pass.toString(), 26364);
+}
+
+module.exports.xorChest = (chk, decode=false) => {
+    if (decode) return xor.decrypt(chk.toString(),59182);
+    return xor.encrypt(chk.toString(),59182);
+}
+
+module.exports.xorQuest = (chk, decode=false) => {
+    if (decode) return xor.decrypt(chk.toString(),19847);
+    return xor.encrypt(chk.toString(),19847);
 }
 
 module.exports.sparedatetime = () => {
@@ -164,4 +188,8 @@ module.exports.time = (time) => {
     if (Math.floor(time) > 1) cyclename+="s"; 
 
     return `${Math.floor(time)} ${cyclename}`;
+}
+
+module.exports.rand = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
