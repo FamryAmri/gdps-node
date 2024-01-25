@@ -46,6 +46,62 @@ var getsong = (req, res) => {
     return res.send(strsong.join("~|~"));
 }
 
+var getchest = (req, res) => {
+    var id = req.body.accountID || 0;
+    var type = req.body.rewardType || 0;
+    var uid = req.body.uuid || 0;
+    var udid = req.body.udid || 0;
+
+    if (id==0 || uid==0 || udid==0 || !req.body.chk) return res.send("-1");
+
+    var chk = req.body.chk;
+    chk = tools.xorChest(chk.slice(5),true);
+
+    var reward = misc.chestRewards(id,type);
+
+    if (reward.length==0) return res.send("-1");
+    
+    var chest = [];
+    for (let o = 0; o < 2; o++) chest.push(`${reward[o]['orbs']},${reward[o]['diamonds']},${reward[o]['shard']},${reward[o]['keys']}`);
+
+    var output = [
+        1, uid, chk, udid, id, reward[0]['timeleft'], chest[0], reward[0]['open'], reward[1]['timeleft'], chest[1], reward[1]['open'],type
+    ];
+
+    var string = tools.xorChest(output.join(":"));
+    var hash = tools.chesthash(string);
+
+    return res.send(`FamRy${string}|${hash}`);
+}
+
+var getquest = (req, res) => {
+    var uid = req.body.uuid || 0;
+    var udid = req.body.udid || 0;
+    var id = req.body.accountID || 0;
+
+    if (uid==0 || udid==0 || id==0 || !req.body.chk) return res.send("-1");
+    
+    var chk = req.body.chk.slice(5);
+    chk = tools.xorQuest(chk,true);
+
+    var quests = misc.quests();
+    if (quests.list.length==0) return res.send("-1");
+    
+    var quest = [];
+    while (quest.length < 3) {
+        var tmp = quests.list[quest.length];
+        var value = [tmp['questID'],tmp['type'],tmp['amount'],tmp['rewards'],tmp['name']].join(",");
+        quest.push(value);
+    }
+
+    var output = ['FamRy',uid,chk,udid,id,quests.timeleft,quest[0],quest[1],quest[2]].join(":");
+    output = tools.xorQuest(output);
+
+    var hash = tools.questhash(output);
+
+    return res.send(`FamRy${output}|${hash}`);
+}
+
 module.exports = {
-    getuserscore, getsong
+    getuserscore, getsong, getchest, getquest
 }
