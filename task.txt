@@ -1,7 +1,7 @@
 FULL TASK of GDPS-NODE
 
-login = done                            register = done, bug
-backup = done                           load = done, bug
+login = done                            register = done, buggy
+backup = done                           load = done, buggy
 
 reqfriends = done                       acceptreq = done                        friendlist = done
 blocklist = done                        reqlist = done                          blockuser = done
