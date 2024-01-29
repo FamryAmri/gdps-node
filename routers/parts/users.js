@@ -1,5 +1,6 @@
 const tools = require ('../../cores/lib/user');
 const social = require ('../../cores/lib/social');
+const misc = require ('../../cores/lib/misc');
 
 var updateuser = (req, res) => {
     var data = req.body;
@@ -32,13 +33,16 @@ var getuser = (req, res) => {
     var reqadd = users.info["allowFriendReq"];
     var commentshow = users.info["showCommentHistory"];
     var modbadge = 0;
-
+    
+    var role = misc.getUserPerms(targetuser||0,'hasMod');
+    if (role!==0) modbadge = misc.getrole(role)['modlevel'];
+    
     var top = 1;
-
+    
     var friendstate = 0;
-
+    
     if (social.checkblock(req.body.accountID, targetuser)) return res.send("-1");
-
+    
     if (req.body.accountID == targetuser) {
         var msgnew = social.newmsgcount(req.body.accountID);
         var friendreqnew = social.check1ncomeReqCount(req.body.accountID);
@@ -48,17 +52,17 @@ var getuser = (req, res) => {
             ":38", msgnew, 39, friendreqnew, 40, friends
         ]
     } else {
-
+        
         var checkreq = social.checkreq(req.body.accountID, targetuser);
         var whisper = checkreq.whisper;
         friendstate = checkreq.status;
         var whenReq = checkreq.whenReq;
-
+        
         if (friendstate==3) extra = [
             ":32", checkreq.id, 35, whisper, 37, whenReq
         ]
     }
-
+    
     if (!name) return res.send("-1");
     var params = [
         1, name, 2, uid, 13, users.scores["Gcoins"],
@@ -89,8 +93,6 @@ var updateuserinfo = (req, res) => {
     return res.send("1");
 }
 
-
-
 var getuserlist = (req, res) => {
     var type = req.body.type || 0;
     var id = req.body.accountID || 0;
@@ -116,7 +118,37 @@ var getuserlist = (req, res) => {
     return res.send(output);
 }
 
+var getusersearch = (req, res) => {
+    if (!req.body.str) return res.send("-1");
+
+    var str = req.body.str.toLowerCase();
+    var page = req.body.page || 0;
+
+    var list = tools.getusersearch(str,page);
+
+    if (list.total==0 || list.players.length==0) return res.send("-1");
+
+    var opt = [];
+    while (opt.length < list.players.length) {
+        var o = list.players[opt.length];
+        let push = [
+            1,o.username,2,o.uid,
+            13,o.gcoins,17,o.scoins,9,o.icon,10,o.color1,
+            11,o.color2,51,o.color3,14,o.iconT,
+            15,o.special,16,o.id,3,o.stars,8,o.cpoints,
+            4,o.demons,46,o.diamonds,52,o.moons
+        ]
+        opt.push(push.join(":"));
+    }
+
+    var output = opt.join("|");
+    var bonus = `#${list.total}:${page*10}:10`;
+
+    console.log(output+bonus);
+    return res.send(output+bonus);
+}
+
 module.exports = {
     updateuser, updateuserinfo, getuser,
-    getuserlist,
+    getuserlist, getusersearch
 }

@@ -102,6 +102,19 @@ var getquest = (req, res) => {
     return res.send(`FamRy${output}|${hash}`);
 }
 
+var getmod = (req, res) => {
+    if (!req.body.accountID) return res.send("-1");
+
+    var id = req.body.accountID;
+
+    var getrole = misc.getUserPerms(id, "hasMod");
+    if (getrole==0) return res.send("-1");
+
+    var getmod = misc.getrole(getrole);
+    if (getmod['modlevel']==0) return res.send("-1");
+    return res.send(getmod['modlevel'].toString());
+}
+
 module.exports = {
-    getuserscore, getsong, getchest, getquest
+    getuserscore, getsong, getchest, getquest, getmod
 }

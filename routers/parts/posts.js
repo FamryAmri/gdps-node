@@ -1,5 +1,6 @@
 const postTools = require ('../../cores/lib/posts');
 const tools = require ('../../cores/lib/user');
+const tool = require ('../../cores/lib/tools');
 
 var getpost = (req, res) => {
     if (!req.body.accountID) return res.send("#0:0:0");
@@ -16,7 +17,7 @@ var getpost = (req, res) => {
 
         var tmp = [
             2, post.message, 3, uid, 4, post.likes, "5~0~7~0~9",
-            post.whenPost, 6, post.postid
+            tool.timelang(post.whenPost), 6, post.postid
         ]
         onpost.push (tmp.join("~"));
     }
