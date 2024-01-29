@@ -4,19 +4,23 @@ const tools = require ('./tools');
 const userID = 5000;
 
 module.exports.userexists = (username) => {
-    var account = db.select('accounts').find('username',username);
-    if (account.length==0) return false;
-    return account;
+    var account = db.select('accounts', {
+        state: `WHERE username='${username}'`
+    });
+    if (account.count==0) return false;
+    return account.all[0];
 }
 
 module.exports.userScoreExists = (username) => {
     var user = this.userexists(username);
 
     if (!user) return false;
-    var check = db.select('scores').find('ID', user['ID']);
+    var check = db.select('scores', {
+        state: `WHERE ID=${user['ID']}`
+    });
 
-    if (check.length==0) return false;
-    return check;
+    if (check.count==0) return false;
+    return check.all[0];
 }
 
 module.exports.createUserScore = (username) => {
@@ -44,10 +48,12 @@ module.exports.userinfoExists = (username) => {
     if (!user) user = {
         "ID": 0
     }
-    var check = db.select('userinfo').find('ID', user['ID']);
+    var check = db.select('userinfo',{
+        state: `WHERE ID=${user['ID']}`
+    });
 
-    if (check.length==0) return false;
-    return check;
+    if (check.count==0) return false;
+    return check.all[0];
 }
 
 module.exports.usericonsExists = (username) => {
@@ -56,10 +62,12 @@ module.exports.usericonsExists = (username) => {
     if (!user) user = {
         "ID": 0
     }
-    var check = db.select('usericons').find('ID', user['ID']);
+    var check = db.select('usericons',{
+        state: `WHERE ID=${user['ID']}`
+    });
 
-    if (check.length==0) return false;
-    return check;
+    if (check.count==0) return false;
+    return check.all[0];
 }
 
 module.exports.createUserInfo = (uid, id=0) => {
@@ -77,42 +85,57 @@ module.exports.createUserIcons = (uid, id=0) => {
 }
 
 module.exports.getNameByID = (id) => {
-    var user = db.select("accounts").find("ID", id);
-    if (!user || user.length==0) return false;
-    return user.username;
+    var user = db.select("accounts", {
+        target: ["username"],
+        state: `WHERE ID = ${id}`
+    });
+    if (!user || user.count==0) return 0;
+    return user.all[0].username;
 }
 
 module.exports.getNameByUID = (uid) => {
-    var user = db.select("scores").find("UID", uid);
-    if (!user || user.length==0) return false;
+    var user = this.getIdByUID(uid);
+    if (!user || user.count==0) return 0;
 
-    return this.getNameByID(user["ID"]);
+    return this.getNameByID(user);
 }
 
 module.exports.getUidByID = (id) => {
-    var user = db.select("scores").find("ID", id);
-    if (!user || user.length==0) return false;
-    return user["UID"];
+    var user = db.select("scores", {
+        target: ["UID"],
+        state: `WHERE ID = ${id}`
+    });
+    if (!user || user.count==0) return 0;
+    return user.all[0]["UID"];
 }
 
 module.exports.getIdByUID = (uid) => {
-    var user = db.select("scores").find("UID", uid);
-    if (!user || user.length==0) return false;
-    return user["ID"];
+    var user = db.select("scores", {
+        target: ['ID'],
+        state: `WHERE UID = ${uid}`
+    });
+    if (!user || user.count==0) return 0;
+    return user.all[0]["ID"];
 }
 
 module.exports.getIDByName = (username) => {
-    var user = db.select ("accounts").find("username", username);
-    if (!user || user.length==0) return false;
-    return user["ID"];
+    var user = db.select ("accounts", {
+        target: ['ID'],
+        state: `WHERE username='${username}'`
+    });
+    if (!user || user.count==0) return 0;
+    return user.all[0]["ID"];
 }
 
 module.exports.getUIDByName = (username) => {
     var user = this.getIDByName(username);
-    if (!user || user.length==0) return false;
-    user = db.select("scores").find("ID", user);
-    if (!user || user.length==0) return false;
-    return user["UID"];
+    if (!user) return false;
+    user = db.select("scores", {
+        target: ["UID"],
+        state: `WHERE ID=${user}`
+    });
+    if (!user || user.count==0) return 0;
+    return user.all[0]["UID"];
 }
 
 module.exports.updateUserInfo = (data) => {
@@ -192,23 +215,35 @@ module.exports.updateUsers = (data) => {
 
 module.exports.getUserIcons = (id) => {
     var uid = this.getUidByID(id);
+    
+    if (uid==0) return {};
+    var user = db.select("usericons", {
+        state: `WHERE UID=${uid}`
+    });
 
-    var user = db.select("usericons").find("UID", uid);
-    return user;
+    return user.all[0];
 }
 
 module.exports.getUserScores = (id) => {
     var uid = this.getUidByID(id);
-    var user = db.select("scores").find("UID", uid);
 
-    return user;
+    if (uid==0) return {};
+    var user = db.select("scores", {
+        state: `WHERE UID=${uid}`
+    });
+
+    return user.all[0];
 }
 
 module.exports.getUserInfo = (id) => {
     var uid = this.getUidByID(id);
-    var user = db.select("userinfo").find("UID", uid);
 
-    return user;
+    if (uid==0) return {};
+    var user = db.select("userinfo", {
+        state: `WHERE UID=${uid}`
+    });
+
+    return user.all[0];
 }
 
 module.exports.getUsers = (id) => {
@@ -220,5 +255,50 @@ module.exports.getUsers = (id) => {
         info: info || {},
         scores: scores || {},
         icons: icons || {}
+    }
+}
+
+module.exports.getusersearch = (string, page=0, count=10) => {
+    var data = [];
+    var players = db.select('accounts', {
+        target: ["ID", "username"],
+        state: `WHERE username LIKE '%${string}%' ORDER BY ID LIMIT ${count} OFFSET ${page}*${count}`
+    });
+
+    var total = db.select('accounts', {
+        target: ["count(*)"],
+        state: `WHERE username LIKE '%${string}%'`
+    }).count;
+
+    var player = players.all;
+
+    while (data.length < players.count) {
+        var users = this.getUsers(player[data.length].ID);
+        var push = {}
+
+        push.top = 1;
+        push.username = player[data.length].username;
+        push.uid = users.info['UID'];
+        push.gcoins = users.scores['Gcoins'];
+        push.scoins = users.scores['Scoins'];
+        push.icon = tools.icons(users.icons);
+        push.color1 = users.icons['iconPColor'];
+        push.color2 = users.icons['iconSColor'];
+        push.color3 = users.icons['iconTColor'];
+        push.iconT = users.icons['iconPrimary'];
+        push.special = users.icons['special'];
+        push.id = users.info['ID'];
+        push.stars = users.scores['stars'];
+        push.cpoints = users.scores['CPoints'];
+        push.demons = users.scores['demons'];
+        push.diamonds = users.scores['diamond'],
+        push.moons = users.scores['moon'];
+
+        data.push(push);
+    }
+
+    return {
+        players: data || [],
+        total
     }
 }

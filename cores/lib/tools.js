@@ -5,6 +5,8 @@ const XOR = require ('../XOR');
 const xor = new XOR();
 const fs = require ('fs');
 const path = require('path');
+const db = require ('../database/database');
+const { time } = require("console");
 
 module.exports.datetime = () => {
     var time = new Date();
@@ -93,6 +95,11 @@ module.exports.xorQuest = (chk, decode=false) => {
     return xor.encrypt(chk.toString(),19847);
 }
 
+module.exports.secretGJP = (string, decode=false) => {
+    if (decode) return xor.decrypt(string);
+    return xor.encrypt(string);
+}
+
 module.exports.sparedatetime = () => {
     var time = this.datetime().split(".");
     return time;
@@ -148,6 +155,20 @@ module.exports.diffID = (id=0) => {
     return id * 10; // easy - insane
 }
 
+module.exports.diffByStars = (star) => {
+    var diff = 0;
+    
+    if (star < 2) diff = 0;
+    if (star > 1) diff = 1;
+    if (star > 2) diff = 2;
+    if (star > 3) diff = 3;
+    if (star > 5) diff = 4;
+    if (star > 7) diff = 5;
+    if (star > 9) diff = 0;
+
+    return this.diffID(diff);
+}
+
 module.exports.fixpoints = (number=0) => {
     number = number.toString();
     if (number.includes(".")) {
@@ -171,25 +192,56 @@ module.exports.size = (size=0) => {
     return `${this.fixpoints(size)} ${type[count]}`
 }
 
-module.exports.time = (time) => {
+module.exports.timelang = (time, ago=false) => {
     var now = Date.now();
     var cycle = [1000,60,60,24,7,4,12];
-    var msmhdwm = ['milisecond','second','minute','hour','day','week','month'];
+    var msmhdwm = ['milisecond','second','minute','hour','day','week','month','year'];
 
-    time = now - time;
+    var since = "ago";
+    if (now > time) time = now - time;
+    else time = time - now, since = "from now";
     
     var count = 0;
-    while (time > cycle[count]) {
+    while (time > cycle[count]) { 
         time /=cycle[count];
-        count+=1;
+        if (count < cycle.length) count+=1;
     }
 
     var cyclename = msmhdwm[count];
     if (Math.floor(time) > 1) cyclename+="s"; 
 
-    return `${Math.floor(time)} ${cyclename}`;
+    var langtime = `${Math.floor(time)} ${cyclename}`;
+    if (ago) langtime += ` ${since}`;
+
+    return langtime;
 }
 
 module.exports.rand = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+module.exports.timeholder = (name, time=0, value='0') => {
+    var getTime = db.select('timeholder', {
+        state: `WHERE name='${name}'`
+    });
+
+    if (time==0) {
+        if (getTime.count!==0) {
+            time = getTime.all[0]['time'];
+            value = getTime.all[0]['value'];
+        }
+    } else {
+        var up;
+        if (getTime.count!==0) {
+            up = db.update('timeholder').target('name', name);
+            up.set('time', time);
+            up.set('value', value);
+        } else {
+            up = db.insert('timeholder').target(['name','time','value'])
+            up.add([name,time,value]);
+        }
+        up.save();
+    }
+    
+    return {name,time,value}
 }

@@ -13,7 +13,7 @@ module.exports.createMessage = (id=0, id2=0, subject='', message='') => {
     var create = db.insert('messages').target(['oneID', 'twoID', 'subject', 'message', 'whenSent']);
 
     create.add([
-        id, id2, subject, message, tools.datetime()
+        id, id2, subject, message, Date.now()
     ]);
 
     create.save();
@@ -294,7 +294,7 @@ module.exports.checkreq = (id, id2) => {
 
 module.exports.addReq = (id, id2, whisper='') => {
     var req = db.insert('friends').target(['oneID', 'twoID', 'whisper', 'whenReq']);
-    req.add([id, id2, whisper, tools.datetime()]);
+    req.add([id, id2, whisper, Date.now()]);
     req.save();
     return true;
 }
@@ -372,7 +372,7 @@ module.exports.seenmsg = (id=0) => {
 
 module.exports.blockuser = (id, id2) => {
     var block = db.insert ('blocks').target(["oneID", "twoID", 'whenBlock']);
-    block.add([id, id2, tools.datetime()]);
+    block.add([id, id2, Date.now()]);
     block.save();
     return true;
 }
@@ -382,4 +382,111 @@ module.exports.unblockuser = (id, id2) => {
         state: `WHERE oneID = ${id} AND twoID = ${id2}`
     }).run();
     return true;
+}
+
+module.exports.createcomment = (lid, id, comment, percent=0, spam=0) => {
+    var cmt = db.insert('levelcomments').target(['levelID', 'ID', 'comment', 'percent', 'spam', 'createon']);
+
+    cmt.add([lid, id, comment, percent, spam, Date.now()]);
+    cmt.save();
+
+    return true;
+}
+
+module.exports.deletecomment = (lid, id) => {
+    db.delete('levelcomments', {
+        state: `WHERE ID=${id} AND levelID=${lid} LIMIT 1`
+    }).run();
+
+    return true;
+}
+
+module.exports.getcommentByLevelID = (id, count=10, offset=0, mode=0) => {
+    var order = "commentID";
+    if (mode > 0) order = "likes";
+
+    var comment = db.select('levelcomments', {
+        state: `WHERE levelID=${id} ORDER BY ${order} LIMIT ${count} OFFSET ${offset}*${count}`
+    });
+
+    var limit = comment.count;
+    var total = 0;
+    var comments = [];
+
+    if (comment.count!==0) {
+        var dostate = db.select('levelcomments',{
+            target: ['count(*)'],
+            state: `WHERE levelID=${id}`
+        });
+
+        total = dostate.count;
+
+        while (comments.length < comment.count) {
+            var o = comment.all[comments.length];
+            var u = user.getUserIcons(o['ID']);
+
+            var tmp = {};
+            tmp.username = user.getNameByID(o['ID']);
+            tmp.id = o['ID'], tmp.levelid = o['levelID'];
+            tmp.comment = o['comment'], tmp.uid = user.getUidByID(o['ID']);
+            tmp.commentid = o['commentID'], tmp.percent = o['percent'];
+            tmp.icon = tools.icons(u), tmp.color1 = u['iconPColor'];
+            tmp.color2 = u['iconSColor'], tmp.color3 = u['iconTColor'];
+            tmp.iconType = u['iconPrimary'], tmp.special = u['special'];
+            tmp.likes = o['likes'], tmp.spam = o['spam'], tmp.createon = o['createon'];
+
+            comments.push(tmp);
+        }
+    }
+
+    return {
+        total,
+        comments,
+        limit
+    }
+}
+
+module.exports.getcommentByID = (id, count=10, offset=0, mode=0) => {
+    var order = "commentID";
+    if (mode > 0) order = "likes";
+
+    var comment = db.select('levelcomments', {
+        state: `WHERE ID=${id} ORDER BY ${order} LIMIT ${count} OFFSET ${offset}*${count}`
+    });
+
+    var limit = comment.count;
+    var total = 0;
+    var comments = [];
+
+    if (comment.count!==0) {
+        var dostate = db.select('levelcomments',{
+            target: ['count(*)'],
+            state: `WHERE ID=${id}`
+        });
+
+        total = dostate.count;
+
+        while (comments.length < comment.count) {
+            var o = comment.all[comments.length];
+            var u = user.getUserIcons(o['ID']);
+
+            var tmp = {};
+            tmp.username = user.getNameByID(o['ID']);
+            tmp.id = o['ID'], tmp.levelid = o['levelID'];
+            tmp.comment = o['comment'], tmp.uid = user.getUidByID(o['ID']);
+            tmp.commentid = o['commentID'], tmp.percent = o['percent'];
+            tmp.icon = tools.icons(u), tmp.color1 = u['iconPColor'];
+            tmp.color2 = u['iconSColor'], tmp.color3 = u['iconTColor'];
+            tmp.iconType = u['iconPrimary'], tmp.special = u['special'];
+            tmp.likes = o['likes'], tmp.spam = o['spam'], tmp.createon = o['createon'];
+
+            comments.push(tmp);
+        }
+    }
+
+    return {
+        total,
+        comments,
+        limit
+    }
 }

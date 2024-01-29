@@ -12,7 +12,7 @@ module.exports.accountImport = (id=0, data) => {
     if (id==0) return false;
 
 
-    var data = tools.compressGzip(data.replace(/=/g, ''));
+    var data = tools.compressGzip(data);
 
     var savespath = path.join(global.system.mainpath, global.config.datapath);
     var filename = path.join (savespath, `/a/${id}.gz`);
@@ -49,6 +49,7 @@ module.exports.verifyaccount = (username, password) => {
 module.exports.createaccount = (username,password,email) => {
     if (user.userexists(username)) return false;
 
+    var time = Date.now();
     var target = ['username','password','email','createon','saveon'];
     var push = [username, tools.hashpassword(password), email, time, time];
 
@@ -59,7 +60,6 @@ module.exports.createaccount = (username,password,email) => {
     }
 
     var account = db.insert('accounts').target(target);
-    var time = tools.datetime();
     account.add(push);
     account.save();
     return true;
@@ -70,6 +70,6 @@ module.exports.saveonupdate = (id=0) => {
     if (id==0) return false; 
 
     var update = db.update('accounts').target("ID", id);
-    update.set("saveon", tools.datetime());
+    update.set("saveon", Date.now());
     return true;
 }

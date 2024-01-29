@@ -67,6 +67,89 @@ module.exports.leaderboard = (type='relative', id=accID, count=100) => {
     return data;
 }
 
+module.exports.createrole = (name='role', perms='hasMod', modlevel=1, color='255,255,255') => {
+    var createrole = db.insert('roles').target(['name','permissions','modlevel', 'colors']);
+    createrole.add([name,perms,modlevel,color]);
+    createrole.save();
+    return true;
+}
+
+module.exports.deleterole = (id=0) => {
+    if (id==0) return false;
+    db.delete('roles', {
+        state: `WHERE ID=${id}`
+    }).run();
+
+    return true;
+}
+
+module.exports.getrole = (id=0) => {
+    if (id==0) return false;
+    var roleinfo = db.select('roles', {
+        target: ['name','permissions','modlevel','colors'],
+        state: `WHERE ID=${id}`
+    });
+
+    if (roleinfo.count==0) return false;
+    var role = roleinfo.all[0];
+    role.permissions = role.permissions.split(",");
+
+    return role;
+}
+
+module.exports.getRolesFromAcc = (id=0) => {
+    if (id==0) return [];
+    var roleassign = db.select('roleassign', {
+        target: ['roleID'],
+        state: `WHERE accountID=${id}`
+    });
+
+    if (roleassign.count==0) return [];
+    var output = [];
+
+    while (output.length < roleassign.count) output.push(roleassign.all[output.length]['roleID']);
+    return output;
+}
+
+module.exports.hasroleperms = (id=0,perms) => {
+    var roleinfo = this.getrole(id);
+    if (!roleinfo) return false;
+    
+    var perms = roleinfo.permissions.filter(o=>o==perms);
+    if (perms.length!==0) return true;
+    return false;
+}
+
+module.exports.getUserPerms = (id=0,perms='hasMod') => {
+    if (id==0) return false;
+
+    var role = this.getRolesFromAcc(id);
+    if (role.length==0) return 0;
+
+    var o = 0;
+    var onrole = 0;
+    while (o < role.length) {
+        if (this.hasroleperms(role[o],perms)) onrole=role[o];
+        o+=1;        
+    }
+
+    return onrole;
+}
+
+module.exports.createSong = (name,author,authorID,size,link,id=0) => {
+    var ready = ['name','author','authorID','size','link'];
+    var value = [name,author,authorID,size,link]
+
+    if (id!==0) {
+        ready.push('ID');
+        value.push(id);
+    }
+
+    var insert = db.insert('songs').target(ready);
+    insert.add(value);
+    return insert.save();
+}
+
 module.exports.getSongs = (id=0) => {
     if (id==0) return {};
     var song = db.select("songs", {
@@ -187,7 +270,7 @@ module.exports.quests = () => {
     var timeleft = tmr - Date.now();
     timeleft = Math.floor(timeleft/1000);
 
-    var gdbefore = new Date('August 12, 2013'); // time release of geometry dash
+    var gdbefore = new Date('August 12, 2013'); // date release of geometry dash
     var gdrelease = gdbefore.setHours(24);
 
     var quest = global.quests;

@@ -38,7 +38,7 @@ module.exports.getposts = (id=0, offset=0) => {
 module.exports.createpost = (id, message) => {
     var inpost = db.insert('userpost').target(["ID", "postmessage", "whenPost"]);
 
-    inpost.add([id, message, tools.datetime()]);
+    inpost.add([id, message, Date.now()]);
     inpost.save();
 
     return true;
