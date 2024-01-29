@@ -3,6 +3,7 @@ const config = require ('./config');
 global.config = config.configuration;
 global.chestrewards = config.chestrewards;
 global.quests = config.quests;
+global.modrate = config.modrate;
 
 // System Configuration
 global.system = {

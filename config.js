@@ -59,9 +59,13 @@ var quests = [
     }
 ]
 
+var mods = {
+    modrate: 1,
+    guestrate: 10
+}
 
 module.exports = {
     configuration,
     chestrewards,
-    quests
+    quests, mods
 }
