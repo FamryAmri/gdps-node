@@ -94,7 +94,8 @@ module.exports.update = (name) => {
                 save: () => {
                     db.prepare(`UPDATE ${name} SET ${sett.join(",")} WHERE ${target.join("AND")}`).run();
                     db.close();
-                }
+                },
+                sqlcode: `UPDATE ${name} SET ${sett.join(",")} WHERE ${target.join("AND")}`
             }
         }
     }

@@ -23,19 +23,24 @@ const tablesSQLITE = [
                 params: "NOT NULL"
             },
             {
+                name: "secretGJP",
+                type: "TEXT",
+                params: "DEFAULT ''"
+            },
+            {
                 name: "admin",
                 type: "INTEGER",
                 params: "DEFAULT 0"
             },
             {
                 name: "saveon",
-                type: "TEXT",
-                params: "DEFAULT '0000.00.00.00:00'"
+                type: "INTEGER",
+                params: "DEFAULT 0"
             },
             {
                 name: "createon",
-                type: "TEXT",
-                params: "DEFAULT '0000.00.00.00:00'"
+                type: "INTEGER",
+                params: "DEFAULT 0"
             }
         ]
     },
@@ -128,6 +133,11 @@ const tablesSQLITE = [
                 params: "DEFAULT 0"
             },
             {
+                name: "autoReq",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            },
+            {
                 name: "starsReq",
                 type: "INTEGER",
                 params: "DEFAULT 0"
@@ -185,13 +195,13 @@ const tablesSQLITE = [
             },
             {
                 name: "createon",
-                type: "TEXT",
-                params: "DEFAULT '0000.00.00.00:00'",
+                type: "INTEGER",
+                params: "DEFAULT 0",
             },
             {
                 name: "updateon",
-                type: "TEXT",
-                params: "DEFAULT '0000.00.00.00:00'"
+                type: "INTEGER",
+                params: "DEFAULT 0"
             },
             {
                 name: "settings",
@@ -221,7 +231,7 @@ const tablesSQLITE = [
             {
                 name: "extras",
                 type: "TEXT",
-                params: "NOT NULL"
+                params: "DEFAULT ''"
             },
             {
                 name: "levelinfo",
@@ -244,14 +254,14 @@ const tablesSQLITE = [
                 params: 'DEFAULT 0'
             },
             {
-                name: 'status',
+                name: 'type',
                 type: 'INTEGER',
                 params: 'DEFAULT 0'
             },
             {
-                name: 'whenRelease',
+                name: 'status',
                 type: 'INTEGER',
-                params: 'DEFAULT 0'
+                params: 'DEFAULT 1'
             },
             {
                 name: 'whenSet',
@@ -259,6 +269,7 @@ const tablesSQLITE = [
                 params: 'DEFAULT 0'
             }
         ]
+
     },
     {
         name: 'scorelevel',
@@ -326,6 +337,21 @@ const tablesSQLITE = [
         ]
     },
     {
+        name: 'roleassign',
+        intable: [
+            {
+                name: 'accountID',
+                type: 'INTEGER',
+                params: 'DEFAULT 0'
+            },
+            {
+                name: 'roleID',
+                type: 'INTEGER',
+                params: 'DEFAULT 0'
+            }
+        ]
+    },
+    {
         name: "roles",
         intable: [
             {
@@ -342,6 +368,11 @@ const tablesSQLITE = [
                 name: "permissions",
                 type: "TEXT",
                 params: "NOT NULL"
+            },
+            {
+                name: "modlevel",
+                type: "INTEGER",
+                params: "DEFAULT 0"
             },
             {
                 name: "colors",
@@ -365,8 +396,8 @@ const tablesSQLITE = [
             },
             {
                 name: "createon",
-                type: "TEXT",
-                params: "DEFAULT '0000.00.00.00:00'"
+                type: "INTEGER",
+                params: "DEFAULT 0"
             }
         ]
     },
@@ -590,8 +621,8 @@ const tablesSQLITE = [
             },
             {
                 name: "whenSent",
-                type: "TEXT",
-                params: "DEFAULT '0000.00.00.00.00'"
+                type: "INTEGER",
+                params: "DEFAULT 0"
             }
         ]
     },
@@ -625,8 +656,53 @@ const tablesSQLITE = [
             },
             {
                 name: "whenPost",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            }
+        ]
+    },
+    {
+        name: "levelcomments",
+        intable: [
+            {   
+                name: "commentID",
+                type: "INTEGER",
+                params: "PRIMARY KEY AUTOINCREMENT"
+            },
+            {
+                name: "levelID",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            },
+            {
+                name: "ID",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            },
+            {
+                name: "likes",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            },
+            {
+                name: "comment",
                 type: "TEXT",
-                params: "DEFAULT '0000.00.00.00:00'"
+                params: "DEFAULT ''"
+            },
+            {
+                name: "percent",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            },
+            {
+                name: "spam",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            },
+            {
+                name: "createon",
+                type: "INTEGER",
+                params: "DEFAULT 0"
             }
         ]
     },
@@ -674,7 +750,12 @@ const tablesSQLITE = [
                 params: "PRIMARY KEY AUTOINCREMENT",
             },
             {
-                name: "who",
+                name: "whoID",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            },
+            {
+                name: "levelID",
                 type: "INTEGER",
                 params: "DEFAULT 0"
             },
@@ -694,9 +775,19 @@ const tablesSQLITE = [
                 params: "DEFAULT 0"
             },
             {
+                name: "featureRate",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            },
+            {
+                name: "epicRate",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            },
+            {
                 name: "whenRated",
-                type: "TEXT",
-                params: "DEFAULT '0000.00.00.00.00'"
+                type: "INTEGER",
+                params: "DEFAULT 0"
             }
         ]
     },
@@ -755,8 +846,8 @@ const tablesSQLITE = [
             },
             {
                 name: "whenReq",
-                type: "TEXT",
-                params: "DEFAULT '0000.00.00.00.00'"
+                type: "INTEGER",
+                params: "DEFAULT 0"
             }
         ]
     },
@@ -780,8 +871,28 @@ const tablesSQLITE = [
             },
             {
                 name: "whenBlock",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            }
+        ]
+    },
+    {
+        name: "timeholder",
+        intable: [
+            {
+                name: "name",
                 type: "TEXT",
-                params: "DEFAULT '0000.00.00.00.00'"
+                params: "DEFAULT 'daily'"
+            },
+            {
+                name: 'value',
+                type: "TEXT",
+                params: "DEFAULT '0'"
+            },
+            {
+                name: "time",
+                type: "INTEGER",
+                params: "DEFAULT 0"
             }
         ]
     },
@@ -800,8 +911,8 @@ const tablesSQLITE = [
             },
             {
                 name: "createon",
-                type: "TEXT",
-                params: "DEFAULT '0000.00.00.00:00'"
+                type: "INTEGER",
+                params: "DEFAULT 0"
             }
         ]
     }
