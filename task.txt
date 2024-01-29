@@ -5,9 +5,9 @@ backup = done, bug                      load = done, bug
 
 reqfriends = done                       acceptreq = done                        friendlist = done
 blocklist = done                        reqlist = done                          blockuser = done
-statusfriendstate = ongoing             unfriend = done                         unblockuser = done
+statusfriendstate = done                unfriend = done                         unblockuser = done
 sentmessage = done                      message list = done                     read message = done
-remove message = done
+remove message = done                   user search = done
 
 ldboard global = done                   ldboard friends = done                  ldboard cp = not yet            ldboard relative = not yet
 update user info = done                 get user info = done                    search user = not yet           
@@ -16,8 +16,8 @@ user post list = done                   user post create = done                 
 level list likes = done                 level owner list = done                 level list sent = not yet
 level list downloads = done             level search id = done                  level gauntlets = not yet
 level list magic = done                 level search string = done              level map packs = not yet
-upload level = done                     download level = done                   delete level = not yet
-daily level = not yet                   weekly level = not yet                  level featured list = not test yet
+upload level = done                     download level = done                   delete level = done
+daily level = done                      weekly level = done                     level featured list = done
 rating level = not yet                  rating level mod = not yet              level hall of fame = done
 level trending = not yet                level recent = not yet                  level friends = done
 level awarded = done                    level followed = not yet                level epic list = done
@@ -28,7 +28,7 @@ level uncompleted list = not yet        level delete = done
 chest rewards = done                    diamonds quest = done
 
 songs = done                            cron = not yet                          tools = not yet
-account manage = not yet                caches = not yet                        moderator = not yet
+account manage = not yet                caches = done                           moderator = not yet
 admins = not yet                        database menu = not yet                 api = not yet
 
 TOOLS CONTAIN - tips (user songs will convert normal quality (192kbps), if configuration set on it)
