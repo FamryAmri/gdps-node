@@ -4,8 +4,11 @@ const tools = require ('./tools');
 const userID = 5000;
 
 module.exports.userexists = (username) => {
+    var state = `ID=${username}`
+    if (isNaN(username)) state = `username='${username}'`
+
     var account = db.select('accounts', {
-        state: `WHERE username='${username}'`
+        state: `WHERE ${state}`
     });
     if (account.count==0) return false;
     return account.all[0];

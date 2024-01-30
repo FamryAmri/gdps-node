@@ -46,12 +46,29 @@ module.exports.verifyaccount = (username, password) => {
     return chk;
 }
 
+module.exports.verifyaccount2 = (username, gjp2) => {
+    var account = user.userexists(username);
+    if (!account) return false;
+
+    var cgjp2 = account.secretGJP2 || false;
+    if (!cgjp2) return false;
+
+    var chk = tools.verifypassword(cgjp2, gjp2);
+
+    return chk;
+}
+
 module.exports.createaccount = (username,password,email) => {
     if (user.userexists(username)) return false;
 
     var time = Date.now();
-    var target = ['username','password','email','createon','saveon'];
-    var push = [username, tools.hashpassword(password), email, time, time];
+    var target = ['username','password','email','secretGJP','secretGJP2', 'createon','saveon'];
+
+    var gjp = tools.secretGJP(password);
+    var gjp2 = tools.secretGJP2(password);
+    var hash = tools.hashpassword(password);
+
+    var push = [username, hash, email, gjp, gjp2, time, time];
 
     var count = db.select("accounts").count;
     if (count==0) {

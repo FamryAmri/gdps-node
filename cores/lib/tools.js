@@ -100,6 +100,16 @@ module.exports.secretGJP = (string, decode=false) => {
     return xor.encrypt(string);
 }
 
+var hashGJP2 = (password) => {
+    if (!password) return false;
+    var sha = this.sha1(password,"mI29fmAnxgTs");
+    var hash = this.hashpassword(sha); 
+    return hash;
+}
+
+module.exports.hashGJP2 = hashGJP2;
+module.exports.secretGJP2 = hashGJP2;
+
 module.exports.sparedatetime = () => {
     var time = this.datetime().split(".");
     return time;
