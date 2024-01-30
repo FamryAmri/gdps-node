@@ -3,12 +3,18 @@ const tools = require ("../../cores/lib/account");
 
 var login = (req, res) => {
     var username = req.body.userName.toLowerCase();
-    var password = req.body.password;
+    var password = req.body.password || req.body.gjp2 || '1';
     var secret = req.body.secret;
+
+    var isVerify = false;
 
     var account = user.userexists(username);
     if (!account) return res.send("-1");
-    if (!tools.verifyaccount(username, req.body.password)) return res.send("-1");
+    if (tools.verifyaccount(username, password)) isVerify = true;
+    else if (tools.verifyaccount2(username,password)) isVerify = true;
+    
+    if (!isVerify) return res.send("-1");
+
     var userinfo = user.userinfoExists(username);
 
     if (!userinfo) {
@@ -25,6 +31,7 @@ var login = (req, res) => {
 }
 
 var register = (req,res) => {
+    console.log(req.body);
     var username = req.body.userName.toLowerCase();
     var email = req.body.email;
     var password = req.body.password;
@@ -37,7 +44,9 @@ var register = (req,res) => {
 }
 
 var saves = (req, res) => {
-    var username = req.body.userName.toLowerCase();
+    var username = req.body.accountID || req.body.userName.toLowerCase() || false;
+    if (!username) return res.send("-1");
+
     var account = user.userexists(username);
     if (!account) return res.send("-1");
     if (tools.verifyaccount(username, account["password"])) return res.send("-1");
@@ -49,7 +58,9 @@ var saves = (req, res) => {
 }
 
 var loads = (req, res) => {
-    var username = req.body.userName.toLowerCase();
+    var username = req.body.accountID || req.body.userName.toLowerCase() || false;
+    if (!username) return res.send("-1");
+
     var account = user.userexists(username);
     if (!account) return res.send("-1");
     if (tools.verifyaccount(username, account["password"])) return res.send("-2");
@@ -59,6 +70,7 @@ var loads = (req, res) => {
 
     var result = [saveData,req.body.gameVersion,req.body.binaryVersion,'a','a'];
     var output = result.join(";");
+
     return res.send(output);
 }
 

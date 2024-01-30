@@ -14,6 +14,9 @@ const uploads = (req, res) => {
 }
 
 const getlevels = (req, res) => {
+    var gameVersion = req.body.gameVersion || '21';
+    if (gameVersion=='22') if (req.body.diff) req.body.diff = req.body.diff[0];
+
     var levelmulstr = [];
     var level = tools.levelsearch(req.body);
     
