@@ -53,3 +53,8 @@ Collect 1000 amount of orbs, and you will get 10 diamonds as rewards.
 
 This repository is still in development; you can read at [task.txt](task.txt).
 Some functions may have bugs and errors!
+
+## Credits
+GDPS: [Cvolton](http://github.com/cvolton) - Getting output of gdps/gd <br>
+GDBrowser: [GDColon](http://github.com/gdcolon)  - Thanks for xor script <br>
+GDDocs: [Wyliemaster](http://github.com/Wyliemaster) - Getting post data of geometry dash and all about information <br>
