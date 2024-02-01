@@ -7,13 +7,18 @@ const social = require ('./parts/social');
 const posts = require ('./parts/posts');
 const misc = require ('./parts/misc');
 
+// (:v) emoji, well it's v stand for version
+
 app.post("/getGJUsers:v.php", user.getusersearch);
 app.post ("/getGJUserList:v.php", user.getuserlist);
 app.post("/getGJUserInfo:v.php", user.getuser);
 app.post("/updateGJUserScore:v.php", user.updateuser);
 app.post("/updateGJAccSettings:v.php", user.updateuserinfo);
 
-app.post("/getGJScores:v.php", misc.getuserscore)
+app.post("/getGJScores:v.php", misc.getuserscore);
+
+app.post("/likeGJItem.php", misc.like);
+app.post("/likeGJItem:v.php", misc.like);
 
 app.post("/getGJAccountComments:v.php", posts.getpost);
 app.post('/uploadGJAccComment:v.php', posts.createpost);

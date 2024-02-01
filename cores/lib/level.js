@@ -102,19 +102,12 @@ module.exports.updateLevel = (data) => {
 
     var time = Date.now();
 
-    var defextra = [];
-    for (let i = 1; i <= 55; i++) {
-        defextra.push(0);
-    }
-
-    defextra = defextra.join("_");
-
     var push = [
         data.levelDesc || '', data.gameVersion || 21, data.binaryVersion || 34,
         data.levelVersion || 1, data.levelLength || 0, data.password || 0, data.requestedStars || 0, 
         data.coins || 0, data.objects || 1, data.songID || 0, data.audioTrack || 0, data.original || 0, 
         data.twoPlayer || 0, time, data.ldm || 0, data.wt || 0, data.wt2 || 0, data.unlisted1 || data.unlisted || 0,
-        data.auto || 0, data.levelInfo || '', data.unlisted2 || 0, data.settingsString || '', data.extraString || defextra
+        data.auto || 0, data.levelInfo || '', data.unlisted2 || 0, data.settingsString || '', data.extraString || ''
     ];
 
     for (let i = 0; i < target.length; i++) {

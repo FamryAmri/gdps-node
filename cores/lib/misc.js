@@ -297,3 +297,48 @@ module.exports.quests = () => {
         list: iD || []
     }
 }
+
+module.exports.likeSome = (id=0, type=1, itemID=0, like=0) => {
+    var target = 'ID', table = 'level';
+    if (type==2) target = 'commentID', table = 'levelcomments';
+    else if (type==3) target = 'postID', table = 'userpost';
+
+    var likeID = db.select('likes', {
+        target: ['likeID', 'like'],
+        state: `WHERE type = ${type} AND itemID = ${itemID}`
+    });
+
+    var isLike = 0, likeid = 0;
+    if (likeID.count!==0) isLike = likeID.all[0]['like'], likeid = likeID.all[0]['likeID'];
+
+    var item = db.select(table, {
+        target: ['likes'],
+        state: `WHERE ${target} = ${itemID}`
+    });
+
+    if (item.count==0) return false;
+
+    var likes = item.all[0]['likes']
+    if (like==1) likes+=1;
+    else likes-=1;
+
+    var update = db.update(table).target(target, itemID);
+    update.set('likes',likes);
+    
+    if (isLike!==like) {
+        update.save();
+
+        if (likeid==0) {
+            var uplike = db.insert('likes').target(['ID', 'like', 'type', 'itemID', 'createon','updateon']);
+            uplike.add([id,like,type,itemID,Date.now(),Date.now()]);
+        } else {
+            var uplike = db.update('likes').target('likeID',likeid);
+            uplike.set('like',like);
+            uplike.set('updateon', Date.now());
+        }
+
+        if (id!==0) uplike.save();
+    }
+
+    return true;
+}

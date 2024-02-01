@@ -115,6 +115,20 @@ var getmod = (req, res) => {
     return res.send(getmod['modlevel'].toString());
 }
 
+var like = (req, res) => {
+    if (!req.body.accountID) return res.send("-1");
+
+    var id = req.body.accountID;
+    var like = req.body.like || 1;
+    var type = req.body.type || 1;
+    var itemID = req.body.itemID || 1;
+ 
+    var liking = misc.likeSome(id,type,itemID,like);
+    
+    if (!liking) return res.send("-1");
+    return res.send("1");
+}
+
 module.exports = {
-    getuserscore, getsong, getchest, getquest, getmod
+    getuserscore, getsong, getchest, getquest, getmod, like
 }

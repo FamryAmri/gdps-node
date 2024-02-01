@@ -143,8 +143,6 @@ var getusersearch = (req, res) => {
 
     var output = opt.join("|");
     var bonus = `#${list.total}:${page*10}:10`;
-
-    console.log(output+bonus);
     return res.send(output+bonus);
 }
 

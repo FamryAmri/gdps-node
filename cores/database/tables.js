@@ -103,11 +103,6 @@ const tablesSQLITE = [
                 params: "DEFAULT 0"
             },
             {
-                name: "dislikes",
-                type: "INTEGER",
-                params: "DEFAULT 0"
-            },
-            {
                 name: "password",
                 type: "INTEGER",
                 params: "DEFAULT 0"
@@ -252,6 +247,46 @@ const tablesSQLITE = [
                 name: "levelinfo",
                 type: "TEXT",
                 params: "DEFAULT ''"
+            }
+        ]
+    },
+    {
+        name: "likes",
+        intable: [
+            {
+                name: "likeID",
+                type: "INTEGER",
+                params: "PRIMARY KEY AUTOINCREMENT"
+            },
+            {
+                name: "ID",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            },
+            {
+                name: "like",
+                type: "INTEGER",
+                params: "DEFAULT 1"
+            },
+            {
+                name: "type",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            },
+            {
+                name: "itemID",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            },
+            {
+                name: "createon",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            },
+            {
+                name: "updateon",
+                type: "INTEGER",
+                params: "DEFAULT 0"
             }
         ]
     },
@@ -736,11 +771,6 @@ const tablesSQLITE = [
             },
             {
                 name: "likes",
-                type: "INTEGER",
-                params: "DEFAULT 0",
-            },
-            {
-                name: "dislikes",
                 type: "INTEGER",
                 params: "DEFAULT 0",
             },
