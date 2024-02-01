@@ -30,8 +30,8 @@ const getlevels = (req, res) => {
     for (let n = 0; n < level.levels.length; n++) {
         var lvl = level.levels[n];
 
-        var uid = user.getUIDByName(lvl["owner"]) || 0;
-        var id = user.getIDByName(lvl['owner']) || 0;
+        var uid = lvl['UID'] || 0;
+        var id = lvl['accountID'] || 0;
         var likes = lvl['dislikes'] - lvl['likes'];
 
         levelmulstr.push ({
@@ -40,12 +40,19 @@ const getlevels = (req, res) => {
             "Gcoins": lvl['Gcoins']
         })
 
+        var epic = lvl['epic'] || 0;
+
+        if (gameVersion==22) {
+            if (lvl['legend']==1) epic=2;
+            if (lvl['mythic']==1) epic=3;
+        }
+
         var inside = [
             1, lvl["ID"], 2, lvl["name"], 5, lvl["version"],
             6, uid, 8, 10, 9, lvl["diff"], 10, lvl['downloads'],
             12, lvl['track'], 13, lvl['gVersion'], 14, likes,
             17, lvl['demon'], 43, lvl['demonDiff'], 25, lvl['autoDiff'] || 0,
-            18, lvl['stars'], 19, lvl['featured'] || 0, 42, lvl['epic'] || 0,
+            18, lvl['stars'], 19, lvl['featured'] || 0, 42, epic,
             45, lvl['objects'], 3, lvl['desc'], 15, lvl['length'],  30, lvl['orignal'],
             31, lvl['dualplayer'], 37, lvl['coins'], 38, lvl['Gcoins'], 39, lvl['starsReq'],
             46, 1, 47, 2, 40, lvl['ldm'], 35, lvl['song']
@@ -57,11 +64,10 @@ const getlevels = (req, res) => {
             uid, lvl['owner'], id
         ]
 
-        var getsong = misc.getSongs(lvl['song']);
-        if (getsong.songid) {
+        if (lvl['song']!==0) {
             var inssong = [
-                1, getsong['songid'], 2, getsong["name"], 3, getsong["authorid"], 
-                4, getsong['author'], 5, getsong['size'], 6,,10,encodeURIComponent(getsong['download']), 7,, 8, 1
+                1, lvl['song'], 2, lvl["songname"], 3, lvl["authorid"], 
+                4, lvl['author'], 5, lvl['size'], 6,,10,encodeURIComponent(lvl['link']), 7,, 8, 1
             ]
             
             var findinssong = songstr.find(o=>o==inssong.join("~|~")) || [];
@@ -115,7 +121,6 @@ var download = (req, res) => {
     if (levelID==0) return res.send("-1");
     if (!tools.existsLevel(levelID)) return res.send("-1");
     
-    console.log(levelID);
     var level = tools.getlevelinfo (levelID);
 
     var uid = user.getUIDByName(level['owner']);
@@ -146,11 +151,18 @@ var download = (req, res) => {
     var createon = tool.timelang(level['createon']);
     var updateon = tool.timelang(level['updateon']);
 
+    var epic = level['epic'] || 0;
+
+    if (req.body.gameVersion && req.body.gameVersion==22) {
+        if (level['legend']==1) epic=2;
+        if (level['mythic']==1) epic=3;
+    }
+
     var readydownload = [
         1, level["ID"], 2, levelname, 3, desc, 4, leveldata,
         5, level['version'], 6, uid, "8:10:9", level['diff'], 10, download, "11:1:12", level['track'],
         13, level['gVersion'], 14, likes, 17, level['demon'], 43, level['demonDiff'], 25, level['autoDiff'],
-        18, level['stars'], 19, level['featured'] || 0, 42, level['epic'] || 0, 45, level['objects'],
+        18, level['stars'], 19, level['featured'] || 0, 42, epic, 45, level['objects'],
         15, level['length'], 30, level['original'], 31, level['dualplayer'], 28, createon, 29,
         updateon, 35, level['song'], 36, level['extras'], 37, level['coins'], 38, level['Gcoins'],
         39, level['starsReq'], 46, level['wt'], 47, level['wt2'], 48, level['settings'], 40, level['ldm'],
@@ -214,13 +226,54 @@ var getDaily = (req, res) => {
     var current = tools.dailyLevel(type).split(",");
     var idchg = 100001;
 
-    if (current[1]==0) return res.send("-1");
     eid = current[1];
     if (type==2) eid+=idchg;
     return res.send(`${eid}|${current[2]}`); 
 }
 
+var getGauntlets = (req, res) => {
+    var gauntlet = [];
+    var somestring = "";
+
+    var gauntlets = tools.gauntlets();
+    if (gauntlets.length==0) return res.send("-1");
+
+    while (gauntlet.length < gauntlets.length) {
+        var i = gauntlet.length;
+
+        var lvl = gauntlets[i]['levels'].join(",");
+        var tmp = [1,gauntlets[i]['ID'],3,lvl].join(":");
+        gauntlet.push(tmp);
+        somestring = `${gauntlets[i]['ID']+lvl}`;
+    }
+
+    output = [gauntlet.join("|"),tool.levelhash2(somestring)].join("#");
+    return res.send(output);
+}
+
+var getpacks = (req, res) => {
+    var onpacks = [];
+    var page = req.body.page || 0;
+
+    var packs = tools.levelpacks(page);
+    if (packs.length==0) return res.send("-1");
+    var hash = tool.levelpackhash(packs);
+
+    while (onpacks.length < packs.length) {
+        var i = onpacks.length;
+        var l = packs[i];
+
+        var color = l['color'];
+        if (color=='none') color = l['rgb'];
+
+        onpacks.push([1,l['ID'],2,l['name'],3,l['levels'].join(","),4,l['stars'],5,l['coins'],6,l['diff'],7,l['rgb'],8,color].join(":"))
+    }
+    
+    var output = [onpacks.join("|"),`${packs.length}:${page*10}:10`,hash].join("#");
+    return res.send(output);
+}
+
 module.exports = {
     uploads, getlevels, download, deletelevel, ratingLevel,
-    rateDemonLevel, getDaily
+    rateDemonLevel, getDaily, getGauntlets, getpacks
 }

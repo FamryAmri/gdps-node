@@ -27,6 +27,8 @@ app.post("/suggestGJStars:v.php", levels.ratingLevel);
 app.post("/rateGJDemon:v.php", levels.rateDemonLevel);
 
 app.post('/getGJDailyLevel.php', levels.getDaily);
+app.post('/getGJGauntlets:v.php', levels.getGauntlets);
+app.post("/getGJMapPacks:v.php", levels.getpacks);
 
 app.post("/acceptGJFriendRequest:v.php", social.acceptReq);
 app.post ("/uploadFriendRequest:v.php", social.addreq);

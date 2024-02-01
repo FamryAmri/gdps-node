@@ -2,12 +2,16 @@ const postTools = require ('../../cores/lib/posts');
 const tools = require ('../../cores/lib/user');
 const tool = require ('../../cores/lib/tools');
 
+// but this doesnt
 var getpost = (req, res) => {
     if (!req.body.accountID) return res.send("#0:0:0");
-    
+    var gameVersion = req.body.gameVersion || '21';
+
+    var target = req.body.accountID;
+    if (gameVersion=='22') target = target[1];
     var offset = req.body.page || 0;
-    var uid = tools.getUidByID (req.body.accountID);
-    var { posts, total } = postTools.getposts(req.body.accountID, offset);
+    var uid = tools.getUidByID (target);
+    var { posts, total } = postTools.getposts(target, offset);
     if (total==0) return res.send("#0:0:0");
 
     var onpost = [];

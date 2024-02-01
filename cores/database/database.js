@@ -104,28 +104,32 @@ module.exports.update = (name) => {
 module.exports.select = (name, params={}) => {
     var target = "*";
     var statement = "";
+    var tdata = [];
     if (params.target) target = params.target.join(",");
     if (params.state) statement = ` ${params.state}`;
 
     if (!this.tables(name)) return false;
     var db = new sql (sqlfile);
 
-    var table = db.prepare(`SELECT ${target} FROM ${name}${statement}`);
+    var query = `SELECT ${target} FROM ${name}${statement}`;
+    if (params.union) query=`${query} UNION ${params.union}`;
+    if (!params.isUnion) {
+        var table = db.prepare(query);
+        tdata = table.all();
+        var count = tdata.length || 0;
+        if (params.target && params.target[0].includes('count(')) count = tdata[0][params.target[0]];
 
-    var tdata = table.all();
-    var count = tdata.length || 0;
-    if (params.target && params.target[0].includes('count(')) count = tdata[0][params.target[0]];
-
-    return {
-        all: tdata || [],
-        find: (where, data) => {
-            return tdata.find(o=>o[where]==data) || [];
-        },
-        filter: (where, data) => {
-            return tdata.filter(o=>o[where]===data) || [];
-        },
-        count: count
-    }
+        return {
+            all: tdata || [],
+            find: (where, data) => {
+                return tdata.find(o=>o[where]==data) || [];
+            },
+            filter: (where, data) => {
+                return tdata.filter(o=>o[where]===data) || [];
+            },
+            count: count
+        }
+    } return query;
 }
 
 module.exports.insert = (name) => {
@@ -155,7 +159,7 @@ module.exports.insert = (name) => {
                     tdatass = tdatass.slice(0,-1);
                     return `INSERT INTO ${name} (${tname}) VALUES ${tdatass}`
                 },
-                save: () => {
+                save: (debug=false) => {
                     var tdatass = "";
                     tdatas.forEach(o=>{
                         tdatass+=`(${o.join(",")}),`
@@ -163,8 +167,11 @@ module.exports.insert = (name) => {
 
                     tdatass = tdatass.slice(0,-1);
 
+                    var sqlstate = `INSERT INTO ${name} (${tname}) VALUES ${tdatass}`;
+                    if (debug) console.log(sqlstate)
+
                     var db = new sql (sqlfile);
-                    var table = db.prepare (`INSERT INTO ${name} (${tname}) VALUES ${tdatass}`);
+                    var table = db.prepare (sqlstate);
                     var end = table.run();
                     db.close();
 

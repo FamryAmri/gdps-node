@@ -28,6 +28,11 @@ const tablesSQLITE = [
                 params: "DEFAULT ''"
             },
             {
+                name: "secretGJP2",
+                type: "TEXT",
+                params: "DEFAULT ''"
+            },
+            {
                 name: "admin",
                 type: "INTEGER",
                 params: "DEFAULT 0"
@@ -164,6 +169,16 @@ const tablesSQLITE = [
                 params: "DEFAULT 0"
             },
             {
+                name: "legend",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            },
+            {
+                name: "mythic",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            },
+            {
                 name: "objects",
                 type: "INTEGER",
                 params: "DEFAULT 0"
@@ -241,6 +256,76 @@ const tablesSQLITE = [
         ]
     },
     {
+        name: "gauntlets",
+        intable: [
+            {
+                name: "ID",
+                type: "INTEGER",
+                params: "PRIMARY KEY AUTOINCREMENT"
+            },
+            {
+                name: "levels",
+                type: "TEXT",
+                params: "DEFAULT '0,0,0,0,0'"
+            },
+            {
+                name: "createon",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            }
+        ]
+    },
+    {
+        name: "levelpacks",
+        intable: [
+            {
+                name: "ID",
+                type: "INTEGER",
+                params: "PRIMARY KEY AUTOINCREMENT"
+            },
+            {
+                name: "name",
+                type: "TEXT",
+                params: "DEFAULT ''"
+            },
+            {
+                name: "levels",
+                type: "TEXT",
+                params: "DEFAULT '0,0,0,0,0,0'"
+            },
+            {
+                name: "stars",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            },
+            {
+                name: "coins",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            },
+            {
+                name: "diff",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            },
+            {
+                name: "color2",
+                type: "TEXT",
+                params: "DEFAULT 'none'"
+            },
+            {
+                name: "rgb",
+                type: "TEXT",
+                params: "DEFAULT '255,255,255'"
+            },
+            {
+                name: "createon",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            }
+        ]
+    },
+    {
         name: "eventlevel",
         intable: [
             {
@@ -294,6 +379,11 @@ const tablesSQLITE = [
     {
         name: 'levelCompleted',
         intable: [
+            {
+                name: "ID",
+                type: "INTEGER",
+                params: "DEFAULT 0"
+            },
             {
                 name: 'levelID',
                 type: 'INTEGER',
@@ -776,11 +866,6 @@ const tablesSQLITE = [
             },
             {
                 name: "featureRate",
-                type: "INTEGER",
-                params: "DEFAULT 0"
-            },
-            {
-                name: "epicRate",
                 type: "INTEGER",
                 params: "DEFAULT 0"
             },

@@ -64,8 +64,12 @@ var mods = {
     guestrate: 10
 }
 
+// max payload to 10mb
+payloadlimit = '5mb';
+
 module.exports = {
     configuration,
     chestrewards,
-    quests, mods
+    quests, mods,
+    payloadlimit
 }

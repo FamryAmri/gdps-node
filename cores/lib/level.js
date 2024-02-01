@@ -3,6 +3,7 @@ const db = require ('../database/database');
 const user = require ('./user');
 const social = require ('./social');
 const { getUserPerms, getrole } = require("./misc");
+const search = require ('./search/level');
 
 const levelID = 1000;
 
@@ -145,23 +146,12 @@ module.exports.getlevelinfo = (id) => {
     return level || [];
 }
 
-// this should be makes confused
 module.exports.levelsearch = (params) => {
-    var prms = {
-        target: ["*"],
-        state: ""
-    }
-
+    var level = [];
     var count = 0;
-    var page = params.page || 0;
+    var offset = params.page || 0;
     var search = params.str || '';
     var type = params.type || 0;
-    var diff = params.diff || "-";
-
-    var lenFilter = "";
-    var diffFilter = "";
-    var order = "ORDER BY likes DESC"
-    var state = [];
 
     var options = {
         stars: params.star || 0,
@@ -174,83 +164,120 @@ module.exports.levelsearch = (params) => {
         nostars: params.noStar || 0,
         original: params.original || 0,
         song: params.song || 0,
-        customsong: params.customSong || 0
+        legend: params.legendary || 0,
+        mythic: params.mythic || 0,
+        customsong: params.customSong || 0,
+        ldm: params.ldm || 0
     }
+    
+    var diff = params.diff || "-";
+    var len = params.len || "-";
 
-    if (type==0 || type==12) {
-        if (search!=="") {
-            if (!isNaN(search)) state.push(`ID = ${search}`)
-            else state.push(`name LIKE '%${search}%'`)
-        }
-    } else if (type==1) order = "ORDER BY downloads DESC";
-    else if (type==5) {
-        state.push (`owner = '${user.getNameByID(params.accountID)}'`);
-        order = `ORDER BY ID DESC`;
-    } else if (type==11 || (options.stars==1 && options.nostars==0)) state.push(`stars > 0`)
-    else if (type==6 || type==17 || options.featured==1) state.push("featured > 0")
-    else if (type==16 || options.epic==1) state.push("epic > 0");
-    else if (type==13) {
-        var getids = social.getfriendlist(params.accountID);
-        getids.push (params.accountID);
+    // types (efficient)
+    if (type==21) var {level,count} = this.search.eventlevel(type=1,offset);
+    else if (type==22) var {level,count} = this.search.eventlevel(type=2,offset);
+    else if (type==6 || type==17) var {level,count} = this.search.featuredlist(offset);
+    else if (type==16) var {level,count} = this.search.hotlist(offset);
+    else if (type==27) var {level,count} = this.search.sentlevel(offset);
+    else if (type==5) var {level,count} = this.search.yourlevel(params.accountID, offset);
+    else if (type==11) var {level,count} = this.search.awardlevel(offset);
+    else {
+        var order = 'order by level.ID desc'
+        var state = [];
 
-        var getname = [];
-        for (let o = 0; o < getids.length; o++) {
-            getname.push(`'${user.getNameByID(getids[o])}'`);
-        }
-
-        state.push(`owner IN (${getname.join(",")})`);
-    } else if (type==7) state.push("objects > 9999");
-
-    if (options.coins==1) state.push("coins > 0")
-    if (options.nostars==1 && options.stars==0) state.push("stars < 1")
-
-    if (diff=="-1") state.push(`diff = 0 AND demon = 0 AND autoDiff = 0`);
-    else if (diff=="-3") state.push(`diff = 0 AND demon = 0 AND autoDiff = 1`);
-    else if (diff=="-2") {
-        state.push(`diff = 0 AND demon = 1 AND autoDiff = 0`);
-
-        if (params.demonFilter) {
-            var df = params.demonFilter || 0;
-            var demonFilter = tools.demonDiffID(df);
-            state.push(`demonDiff = ${demonFilter}`);
-        }
-    } else if (diff!=="-") {
-        state.push(`demon = 0 AND autoDiff = 0`);
-        if (diff.includes(",")) {
-            var sdf = diff.split(",");
-            var df = [];
-            for (let o = 0; o < sdf.length; o++) {
-                df.push (tools.diffID(sdf[o]));
+        // other types
+        if (type==0 || type==15) {
+            order = 'order by level.likes desc'
+            if (search) {
+                if (!isNaN(search)) state.push (`level.ID = ${search}`);
+                else state.push (`level.name LIKE '%${search}%'`);
             }
-            df = df.join(",");
-            state.push(`diff IN (${df})`)
-        } else {
-            state.push(`diff = ${tools.diffID(diff)}`)
+        } else if (type==7) {
+            state.push ('objects > 9999');
+        } else if (type==13) {
+            var friends = this.search.friendslevel(params.accountID);
+            state.push (`accounts.ID (${friends.users.join(",")})`);
+        } else if (type==3) {  
+            const time = new Date();
+            var trendtime = time.setHours(0,0,0,0);
+
+            state.push (`level.createon > ${trendtime}`,'level.downloads > 999', 'level.likes > 999');
+        } else if (type==1) order = 'order by level.downloads desc'
+        else if (type==2) order = 'order by level.likes desc'
+
+        // optional search
+        var optional = [];
+        if (options.featured > 0) optional.push('NOT level.featured = 0');
+        if (options.epic > 0) optional.push ('NOT level.epic = 0');
+        if (options.legend > 0) optional.push ('NOT level.legend = 0');
+        if (options.mythic > 0) optional.push ('NOT level.mythic = 0');
+        if (options.nostars > 0) optional.push ('level.stars = 0');
+        if (options.dualPlayer > 0) state.push ('NOT level.dualplayer = 0');
+        if (options.original > 0) state.push ('level.original = ""');
+        if (options.song > 0 && options.song < 23) state.push (`track = ${options.song-1}`);
+        if (options.customsong > 0) optional.push (`song = ${options.song}`);
+        if (options.coins > 0) optional.push ('NOT coins = 0', 'NOT Gcoins = 0');
+        if (options.ldm > 0) optional.push ('NOT ldm = 0');
+
+        if (optional.length > 0) state.push(`(${optional.join(" OR ")})`);
+
+        // difficulty
+        if (diff=="-1") state.push(`diff = 0 AND demon = 0 AND autoDiff = 0`);
+        else if (diff=="-3") state.push(`diff = 0 AND demon = 0 AND autoDiff = 1`);
+        else if (diff=="-2") {
+            state.push(`diff = 0 AND demon = 1 AND autoDiff = 0`);
+
+            if (params.demonFilter) {
+                var df = params.demonFilter || 0;
+                var demonFilter = tools.demonDiffID(df);
+                state.push(`demonDiff = ${demonFilter}`);
+            }
+        } else if (diff!=="-") {
+            state.push(`demon = 0 AND autoDiff = 0`);
+            if (diff.includes(",")) {
+                var sdf = diff.split(",");
+                var df = [];
+                for (let o = 0; o < sdf.length; o++) {
+                    df.push (tools.diffID(sdf[o]));
+                }
+                df = df.join(",");
+                state.push(`diff IN (${df})`)
+            } else {
+                state.push(`diff = ${tools.diffID(diff)}`)
+            }
         }
+
+        // length
+        if (params.len) if (params.len!=="-") {
+            var len = params.len;
+            if (len.includes(",")) state.push(`length IN (${len})`);
+            else state.push (`length = ${len}`);
+        }
+
+        // limitation list
+        var onlimit = ` LIMIT 10 OFFSET ${offset}*10`
+
+        // allstate
+        var allstate = "";
+        if (state.length > 0) allstate = ` WHERE ${state.join(" AND ")}`
+        console.log(state);
+
+        // in querying on database
+        var level = db.select('level', {
+            target: ['level.*', 'accounts.ID AS accountID', 'scores.UID', 'songs.name AS songname','songs.author','songs.authorID','songs.size','songs.link'],
+            state: `LEFT JOIN accounts ON level.owner = accounts.username LEFT JOIN scores ON scores.ID = accounts.ID LEFT JOIN songs ON songs.ID = level.song${allstate} ${order}${onlimit}`
+        }).all;
+
+        var count = db.select('level', {
+            target: ['count(level.ID)'],
+            state: `LEFT JOIN accounts ON level.owner = accounts.username LEFT JOIN scores ON scores.ID = accounts.ID LEFT JOIN songs ON songs.ID = level.song ${allstate}`
+        }).count;
     }
-
-    if (params.len) if (params.len!=="-") {
-        var len = params.len;
-        if (len.includes(",")) state.push(`length IN (${len})`);
-        else state.push (`length = ${len}`);
-    }
-
-    if (state.length > 0) prms.state = `WHERE ${state.join(" AND ")}`;
-    
-    count = db.select('level', {
-        target: ['count(*)'],
-        state: prms.state
-    }).count;
-    
-    prms.state +=` ${order} LIMIT 10 OFFSET ${page}*10`;
-
-    var level = db.select('level', prms);
-    var levels = level.all;
 
     return {
-        levels,
+        levels: level,
         total: count,
-        offset: params.page
+        offset
     }
 }
 
@@ -312,8 +339,8 @@ module.exports.promoteLevel = (id=0, pro={}) => {
         rate.set ('featured', feature);
         rate.set ('epic', epic);
         if (pro.verifycoins) rate.set('Gcoins', pro.verifycoins);
-        // rate.set ('legend', legend);
-        // rate.set ('mythic', mythic);
+        rate.set ('legend', legend);
+        rate.set ('mythic', mythic);
     }
 
     rate.save();
@@ -333,11 +360,17 @@ module.exports.rateLevel = (id=0, lvlid=0, starRate=1, feature=0) => {
         guestrate = global.mods.guestrate;
     }
 
-    if (modlevel > 0) this.promoteLevel(lvlid, {
+    var rate = {
         stars: starRate,
-        feature: feature,
         verifycoins: 1
-    });
+    }
+
+    if (feature==4) rate.mythic = 1;
+    else if (feature==3) rate.legend = 1;
+    else if (feature==2) rate.epic = 1;
+    else rate.feature = 1; 
+
+    if (modlevel > 0) this.promoteLevel(lvlid, rate);
 
     var record = db.insert('ratedLevel').target(['whoID','levelID','hasMod','starRate','featureRate','whenRated']);
     record.add([id,lvlid,modlevel,starRate,feature,Date.now()]);
@@ -404,8 +437,6 @@ module.exports.getevent = (eid=0) => {
 module.exports.dailyLevel = (type=1) => {
     var day = 7;
 
-    console.log(type);
-
     var typename = 'daily';
     if (type==2) typename = 'weekly';
     else if (type==3) typename = 'event';
@@ -435,10 +466,10 @@ module.exports.dailyLevel = (type=1) => {
 
     current.push (Math.floor(left));
     
-    if (current[1]!==0) if (left < 0) {
+    if (left < 0) {
         var up = db.update('eventlevel').target("EID", current[1]);
         up.set('status', 0);
-        up.save();
+        if (current[1]!==0) up.save();
         current = this.currentEventLevel(type).split(",");
 
         var ontime = new Date();
@@ -456,3 +487,84 @@ module.exports.dailyLevel = (type=1) => {
 
     return current.join(",");
 }
+
+module.exports.createGauntlet = (levels=[]) => {
+    if (levels.length==0) return false;
+
+    var insert = db.insert('gauntlets').target(['levels','createon']);
+    insert.add([levels.join(","),Date.now()]);
+    insert.save();
+    return true;
+}
+
+module.exports.gauntlets = () => {
+    var gauntlet = db.select('gauntlets',{
+        state: `ORDER BY ID ASC`
+    });
+
+    var output = [];
+    var count = 0;
+
+    if (gauntlet.count==0) return output;
+
+    while (count < gauntlet.count) {
+        var id = gauntlet.all[count]['ID'];
+        var levels = gauntlet.all[count]['levels'].split(",");
+
+        count+=1;
+
+        if (levels.length==5 || levels[4]!==0) {
+            output.push ({
+                ID: id,
+                levels
+            })
+        }
+    }   
+
+    return output;
+}
+
+module.exports.createLevelPack = (levelpack={}) => {
+    if (!levelpack.levels) return false;
+    var {levels,diff,stars,color,rgb} = levelpack;
+
+    if (!levelpack.color) color = 'none';
+    if (!levelpack.rgb) rgb = '255,255,255';
+    if (levels.length==0) return false;
+
+    var insert = db.insert('levelpacks').target(['levels', 'stars', 'diff', 'color2', 'rgb', 'createon']);
+    insert.add([levels.join(","),stars,diff || 1,color,rgb,Date.now()]);
+    insert.save();
+    return true;
+}
+
+
+module.exports.levelpacks = (page) => {
+    var levelpack = db.select('levelpacks', {
+        state: `order by ID asc limit 10 offset ${page}*10`
+    });
+
+    var levelpacks = [];
+    var l = levelpack.all;
+
+    while (levelpacks.length < levelpack.count) {
+        var i = levelpacks.length;
+        var lv = l[i]['levels'].split(",") || [];
+
+        levelpacks.push ({
+            ID: l[i]['ID'] + 100 || 0,
+            name: l[i]['name'] || 'Unknown',
+            stars: l[i]['stars'] || 0,
+            coins: l[i]['coins'],
+            levels: lv,
+            diff: l[i]['diff'],
+            rgb: l[i]['rgb'],
+            color: l[i]['color2'] || 'none',
+            createon: l[i]['createon'] || Date.now()
+        })
+    }
+
+    return levelpacks;
+}
+
+module.exports.search = search;

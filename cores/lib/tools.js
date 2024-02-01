@@ -38,7 +38,6 @@ module.exports.levelhash = (levelmulstr) => {
 
 module.exports.levelhash1 = (string) => {
     string = string.toString();
-    var key = "xI25fpAapCQg";
 
     if (string.length < 41) return this.sha1(string, key);
     var hash = "";
@@ -46,7 +45,7 @@ module.exports.levelhash1 = (string) => {
         let x = i*Math.floor(string.length/40);
         hash +=string[x];
     }
-    return this.sha1(hash, key);
+    return this.levelhash2(hash);
 }
 
 module.exports.levelhash2 = (string) => {
@@ -68,6 +67,17 @@ module.exports.questhash = (string) => {
     var key = "oC36fpYaPtdg";
 
     return this.sha1(string, key);
+}
+
+module.exports.levelpackhash = (data=[]) => {
+    if (data.length==0) return 0;
+    var str = "";
+    data.forEach(d=>{
+        var id = d['ID'].toString();
+        str+=id[0]+id[id.length-1]+d['stars']+d['coins'];
+    });
+
+    return this.levelhash2(str);
 }
 
 module.exports.compressGzip = (data) => {
