@@ -10,8 +10,8 @@ var login = (req, res) => {
 
     var account = user.userexists(username);
     if (!account) return res.send("-1");
-    if (tools.verifyaccount(username, password)) isVerify = true;
-    else if (tools.verifyaccount2(username,password)) isVerify = true;
+    if (tools.verifypassByusername(username, password)) isVerify = true;
+    else if (tools.verifygjp2Byusername(username,password)) isVerify = true;
     
     if (!isVerify) return res.send("-1");
 
@@ -31,7 +31,6 @@ var login = (req, res) => {
 }
 
 var register = (req,res) => {
-    console.log(req.body);
     var username = req.body.userName.toLowerCase();
     var email = req.body.email;
     var password = req.body.password;

@@ -264,13 +264,13 @@ module.exports.getUsers = (id) => {
 module.exports.getusersearch = (string, page=0, count=10) => {
     var data = [];
     var players = db.select('accounts', {
-        target: ["ID", "username"],
-        state: `WHERE username LIKE '%${string}%' ORDER BY ID LIMIT ${count} OFFSET ${page}*${count}`
+        target: ["accounts.ID", "accounts.username"],
+        state: `LEFT JOIN scores ON scores.ID = accounts.ID WHERE accounts.username LIKE '%${string}%' AND NOT scores.UID = 0 ORDER BY accounts.ID LIMIT ${count} OFFSET ${page}*${count}`
     });
 
     var total = db.select('accounts', {
         target: ["count(*)"],
-        state: `WHERE username LIKE '%${string}%'`
+        state: `LEFT JOIN scores ON accounts.ID = scores.ID WHERE username LIKE '%${string}%' AND NOT scores.UID = 0`
     }).count;
 
     var player = players.all;

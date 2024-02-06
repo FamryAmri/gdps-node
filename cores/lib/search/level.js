@@ -23,12 +23,12 @@ module.exports.sentlevel = (offset=0,limit=10) => {
     var leftjoin = "LEFT JOIN level ON ratedLevel.levelID = level.ID LEFT JOIN accounts ON accounts.username = level.owner LEFT JOIN songs ON songs.ID = level.song LEFT JOIN scores ON scores.ID = accounts.ID"
     var level = db.select('ratedLevel', {
         target: ['distinct levelID, level.*','accounts.ID AS accountID', 'scores.UID', 'songs.name AS songname', 'songs.author', 'songs.authorid', 'songs.link', 'songs.size'],
-        state: `${leftjoin} WHERE level.stars = 0 ORDER BY ratedLevel.ID DESC,level.createon LIMIT ${limit} OFFSET ${offset}*${limit}`
+        state: `${leftjoin} WHERE level.stars = 0  AND ratedLevel.hasMod > 0 ORDER BY ratedLevel.ID DESC,level.createon LIMIT ${limit} OFFSET ${offset}*${limit}`
     }).all;
 
     var count = db.select('ratedLevel', {
         target: ['count(distinct levelID)'],
-        state: `LEFT JOIN level ON ratedLevel.levelID = level.ID WHERE level.stars = 0`
+        state: `LEFT JOIN level ON ratedLevel.levelID = level.ID WHERE level.stars = 0 AND ratedLevel.hasMod > 0`
     }).count;
 
     return {

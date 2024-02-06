@@ -11,7 +11,7 @@ module.exports.leaderboard = (type='relative', id=accID, count=100) => {
     var data = [];
 
     if (type=='top') params.state = `ORDER BY stars DESC LIMIT ${count}`;
-    if (type=='creators') params.state = `ORDER BY CPoints LIMIT ${count}`;
+    if (type=='creators') params.state = `ORDER BY CPoints DESC LIMIT ${count}`;
     if (type=='relative') params.state = `WHERE ID = ${id}`;
 
     var score = [];

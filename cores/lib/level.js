@@ -189,7 +189,7 @@ module.exports.levelsearch = (params) => {
             state.push ('objects > 9999');
         } else if (type==13) {
             var friends = this.search.friendslevel(params.accountID);
-            state.push (`accounts.ID (${friends.users.join(",")})`);
+            state.push (`accounts.ID IN (${friends.users.join(",")})`);
         } else if (type==3) {  
             const time = new Date();
             var trendtime = time.setHours(0,0,0,0);

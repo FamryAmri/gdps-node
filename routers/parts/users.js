@@ -1,6 +1,7 @@
 const tools = require ('../../cores/lib/user');
 const social = require ('../../cores/lib/social');
 const misc = require ('../../cores/lib/misc');
+const acc = require ('../../cores/lib/account');
 
 var updateuser = (req, res) => {
     var data = req.body;
@@ -10,7 +11,9 @@ var updateuser = (req, res) => {
 
     var pass = false;
 
-    if (data.accountID==0) return res.send("-1");
+    var id = req.body.accountID || 0;
+
+    if (id==0) return res.send("-1");
     if (req.body.gjp) if (acc.verifygjp(id,req.body.gjp)) pass = true;
     if (req.body.gjp2) if (acc.verifygjp2(id,req.body.gjp2)) pass = true;
 
@@ -45,8 +48,6 @@ var getuser = (req, res) => {
     var role = misc.getUserPerms(targetuser||0,'hasMod');
     if (role!==0) modbadge = misc.getrole(role)['modlevel'];
     
-    var top = 1;
-    
     var friendstate = 0;
     
     if (social.checkblock(req.body.accountID, targetuser)) return res.send("-1");
@@ -70,7 +71,7 @@ var getuser = (req, res) => {
             ":32", checkreq.id, 35, whisper, 37, whenReq
         ]
     }
-    
+
     if (!name) return res.send("-1");
     var params = [
         1, name, 2, uid, 13, users.scores["Gcoins"],
@@ -116,6 +117,9 @@ var getuserlist = (req, res) => {
 
     if (type==0) ready = social.getfriendlist(id);
     else if (type==1) ready = social.getblocklist(id);
+
+    var newfriend = social.check0utcomeReqCount (id);
+    if (newfriend > 0) social.check0utcomeReqCount(id,newfriend);
 
     if (ready.length==0) return res.send("-2");
 
