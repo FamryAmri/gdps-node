@@ -264,3 +264,13 @@ module.exports.timeholder = (name, time=0, value='0') => {
     
     return {name,time,value}
 }
+
+module.exports.hextoRGB = (hex="#ff0000") => {
+    hex = hex.replace (/^#/, '');
+
+    const red = parseInt (hex.substring(0,2),16);
+    const green = parseInt (hex.substring(2,4),16);
+    const blue = parseInt (hex.substring(4,6),16);
+
+    return `${red},${green},${blue}`
+}

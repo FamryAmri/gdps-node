@@ -1,0 +1,46 @@
+<%- include('../header.ejs') %>
+<% var page = Number(page) || 1; %>
+<div class="container d-flex justify-content-center">
+    <p>Page: <%= page || 1 %> / <%= Math.ceil(total/5) || 1 %></p>
+</div>
+<div class="container d-flex d-flex-c">
+    <div class="container overflow-auto">
+        <table class="table">
+            <hr>
+            <tr>
+                <th>Player Name</th>
+                <th>Assigned</th>
+                <th>o</th>
+            </tr>
+            <% for (let i=0; i < sign.length; i++) { %>
+            <% var href = `?add=1&user=${sign[i]['name']}&role=${sign[i]['roleID']}`; %>
+                <tr>
+                    <td><%= sign[i]['name'] %></td>
+                    <td><%= sign[i]['roleID'] %></td>
+                    <td><a href=<%= href %>>Edit</a></td>
+                </tr>
+            <% } %>
+        </table>
+    </div>
+</div>
+<div class="container d-flex justify-content-between">
+    <div class="container d-flex">
+        <a href="/admin">
+            <button class="btn btn-primary" style="margin-right: 4px">Back</button>
+        </a>
+        <a href="?add=1">
+            <button class="btn btn-primary">Add</button>
+        </a>
+    </div>
+    <div class="container d-flex justify-content-end">
+        <% var prev = page - 1; %>
+        <% var next = page + 1; %>
+        <% if (prev > 0) { %>
+            <a href=<%= "/admin/roles?p=" + prev %>><button class="btn btn-primary" style="margin-right: 2px;"><</button></a>
+        <% } %>
+        <% if (Math.ceil (total/5) !==page) { %>
+            <a href=<%= "/admin/roles?p=" + next %>><button class="btn btn-primary" style="margin-left: 2px;">></button></a>
+        <% } %>
+    </div>
+</div>
+<%- include('../footer.ejs') %>

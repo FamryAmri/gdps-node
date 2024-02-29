@@ -1,0 +1,52 @@
+<%- include('../header.ejs') %>
+<% var page = Number(page) || 1; %>
+<div class="container d-flex justify-content-center">
+    <p>Page: <%= page || 1 %> / <%= Math.ceil(total/5) || 1 %></p>
+</div>
+<div class="container">
+    <hr>
+    <div class="container overflow-auto">
+        <table class="table">
+            <tr>
+                <th>ID</th>
+                <th>name</th>
+                <th>permissions</th>
+                <th>modlvl</th>
+                <th>colors</th>
+                <th>o</th>
+            </tr>
+            <% for (let i=0; i < roles.length; i++) { %>
+            <% var del = `/admin/roles?delete=${roles[i]['ID']}`; %>
+                <tr>
+                    <td><%= roles[i]['ID'] %></td>
+                    <td><%= roles[i]['name'] %></td>
+                    <td><%= roles[i]['permissions'] %></td>
+                    <td><%= roles[i]['modlevel'] %></td>
+                    <td><%= roles[i]['colors'] %></td>
+                    <td><a href=<%= del %>>Del</a></td>
+                </tr>
+            <% } %>
+        </table>
+    </div>
+</div>
+<div class="container d-flex justify-content-between">
+    <div class="container d-flex">
+        <a href="/admin">
+            <button class="btn btn-primary" style="margin-right: 4px">Back</button>
+        </a>
+        <a href="?add=1">
+            <button class="btn btn-primary">Add</button>
+        </a>
+    </div>
+    <div class="container d-flex justify-content-end">
+        <% var prev = page - 1; %>
+        <% var next = page + 1; %>
+        <% if (prev > 0) { %>
+            <a href=<%= "/admin/roles?p=" + prev %>><button class="btn btn-primary" style="margin-right: 2px;"><</button></a>
+        <% } %>
+        <% if (Math.ceil (total/5) !==page) { %>
+            <a href=<%= "/admin/roles?p=" + next %>><button class="btn btn-primary" style="margin-left: 2px;">></button></a>
+        <% } %>
+    </div>
+</div>
+<%- include('../footer.ejs') %>

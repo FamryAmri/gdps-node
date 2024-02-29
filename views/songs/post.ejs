@@ -1,0 +1,36 @@
+<%- include ("../header.ejs") %>
+<div class="container">
+    <div class="container">
+        <h3>Songs Insert</h3>
+        <form>
+            <div class="form-group mb-2">
+                <label for="link">Link</label>
+                <input type="text" name="link" class="form-control" placeholder="YouTube link" id="link" required>
+                <small id="status" class="form-text text-danger"></small>
+            </div>
+            <div class="d-flex align-content-center justify-content-start mb-1">
+                <div class="form-group mx-1">
+                    <a href="/admin/roleassign"><button class="btn btn-primary" type="button">Back</button></a>
+                </div>
+                <div class="form-group mx-1">
+                    <button class="btn btn-primary" type="submit">Add</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    var link = document.getElementById('link');
+    link.addEventListener('change', async (e) => {
+        var status = document.getElementById('status');
+        var value = e.target.value.trim();
+        var match = value.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/);
+
+        if (match) {
+            const res = await fetch (value);
+            if (res.ok) status.innerHTML = 'exists!';
+            else status.innerHTML = 'Not exists!';
+        } else status.innerHTML = 'Not exists!';
+    })
+</script>
+<%- include ("../footer.ejs") %>

@@ -1,0 +1,53 @@
+<%- include('header.ejs') %>
+<div class="container d-flex d-flex-c">
+    <div class="container">
+        <h2>Tools</h2>
+        <ul>
+            <li><a href="/admin/songs">Songs</a></li>
+            <li>Download Level</li>
+            <li>Ban Users</li>
+            <li>Unban Users</li>
+            <li>YouTube Song Download</li>
+            <li><a href="/admin/roles/">Roles</a></li>
+            <li><a href="/admin/roleassign">Assign Roles</a></li>
+        </ul>
+    </div>
+    <div class="container">
+        <h2>Misc</h2>
+        <ul>
+            <li>File Manager</li>
+            <li>DB management</li>
+        </ul>
+    </div>
+</div>
+<hr>
+<div class="container pb-1">
+    <h2>Status</h2>
+    <table class="table">
+        <tr>
+            <th scope="col">Info</th>
+            <th scope="col">Total stats</th>
+            <th scope="col">Week stats</th>
+        </tr>
+        <tr>
+            <td>Levels</td>
+            <td><%= status.level %></td>
+            <td><%= status.levelweek %></td>
+        </tr>
+        <tr>
+            <td>Accounts</td>
+            <td><%= status.accounts %></td>
+            <td><%= status.accweek %></td>
+        </tr>
+        <tr>
+            <td>Songs</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <th scope="col" colspan="2">Database size</th>
+            <td>0</td>
+        </tr>
+    </table>
+</div>
+<%- include('footer.ejs') %>

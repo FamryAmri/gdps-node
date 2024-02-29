@@ -1,0 +1,49 @@
+<%- include ("../header.ejs"); %>
+<% var formname = "Assign role"; %>
+<div class="container">
+    <h2><%= formname %></h2>
+    <form method="post" action="/admin/roleassign">
+        <div class="form-group mb-1">
+            <label for="username">Player Name</label>
+            <% if (!user) { %>
+                <input type="text" class="form-control" name="username" id="username" aria-describedby="status" placeholder="Player Name">
+            <% } else { %>
+                <input type="text" class="form-control" name="username" id="username" value=<%=user%> aria-describedby="status" placeholder="Player Name">
+            <% } %>
+            <% if (error==1||error==3) { %>
+                <small id="status" class="form-text text-danger">player name must be exists!</small>
+            <% } %>
+        </div>
+        <div class="form-group mb-2">
+            <label for="roles">Roles</label>
+            <select class="form-control mb-1" id="default-select" name="role" aria-describedby="status-role">
+                <option value="0">-</option>
+                <% for (let i = 0; i < roles.length; i++) { %>
+                    <% if (role==roles[i]['ID']) { %>
+                        <option value=<%= roles[i]['ID']%> selected><%= roles[i]['name']%></option>
+                    <% } else { %>
+                        <option value=<%= roles[i]['ID']%>><%= roles[i]['name']%></option>
+                    <% } %>
+                <% } %>
+            </select>
+            <% if (error==2||error==3) { %>
+                <small id="status-role" class="form-text text-danger">role can't be empty! (-)</small>
+            <% } %>
+        </div>
+        <div class="d-flex align-content-center justify-content-center mb-1">
+            <div class="form-group mx-1">
+                <a href="/admin/roleassign"><button class="btn btn-primary" type="button">Back</button></a>
+            </div>
+            <div class="form-group mx-1">
+                <button class="btn btn-primary" type="submit">Assign</button>
+            </div>
+            <% if (user) { %>
+            <div class="form-group mx-1">
+                <% var href = `?delete=${user}`; %>
+                <a href=<%= href %>><button class="btn btn-danger" type="button">Delete</button></a>
+            </div>
+            <% } %>
+        </div>
+    </form>
+</div>
+<%- include ("../footer.ejs"); %>

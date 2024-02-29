@@ -2,14 +2,25 @@ const express = require ('express');
 const app = express();
 const bodyParser = require('body-parser');
 const path = require ('path');
+const exps = require ('express-session');
 
 const limit = global.payloadlimit;
 
 app.use(bodyParser.json({ limit }));
-app.get("/favicon.ico", (req, res)=> res.sendFile(path.join(global.system.mainpath, "/favicon.ico")));
 app.use(bodyParser.urlencoded({ limit, extended: true }));
 
+app.engine ('.ejs', require ('ejs').__express);
+app.set('view engine', 'ejs');
+
+app.use(exps({
+    secret: "xFcaSvG",
+    resave: false,
+    saveUninitialized: true
+}));
+
 app.use('/songs', express.static(path.join(global.system.mainpath, "/data/s")));
+
+app.use('/admin',require ('../routers/admin'));
 
 var dbname = global.databasepath;
 

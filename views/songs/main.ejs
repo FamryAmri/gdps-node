@@ -1,0 +1,45 @@
+<%- include('../header.ejs') %>
+<div class="container d-flex justify-content-center">
+    <p>Page: <%= page || 1 %> / <%= Math.ceil(total/5) || 1 %></p>
+</div>
+<div class="container">
+    <div class="container overflow-auto">
+        <table class="table">
+            <tr>
+                <th>ID</th>
+                <th>Artist</th>
+                <th>Title</th>
+                <th>Download | Size</th>
+            </tr>
+            <% for (let i = 0; i < songs.length; i++) { %>
+                <tr>
+                    <td><%= songs[i]['ID'] %></td>
+                    <td><%= songs[i]['author'] %></td>
+                    <td><%= songs[i]['name'] %></td>
+                    <td><a href=<%= songs[i]['link'] %>>Download</a> | <%= songs[i]['size'] %></td>
+                </tr>
+            <% } %>
+        </table>
+    </div>
+</div>
+<div class="container d-flex justify-content-between">
+    <div class="container d-flex">
+        <a href="/admin">
+            <button class="btn btn-primary" style="margin-right: 4px">Back</button>
+        </a>
+        <a href="?add=1">
+            <button class="btn btn-primary">Add</button>
+        </a>
+    </div>
+    <div class="container d-flex justify-content-end">
+        <% var prev = page - 1; %>
+        <% var next = page + 1; %>
+        <% if (prev > 0) { %>
+            <a href=<%= "/admin/songs?p=" + prev %>><button class="btn btn-primary" style="margin-right: 2px;"><</button></a>
+        <% } %>
+        <% if (Math.ceil (total/5) !==page) { %>
+            <a href=<%= "/admin/songs?p=" + next %>><button class="btn btn-primary" style="margin-left: 2px;">></button></a>
+        <% } %>
+    </div>
+</div>
+<%- include('../footer.ejs') %>

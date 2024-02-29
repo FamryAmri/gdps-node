@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <% var ontitle = "Main"; %>
+        <% var name = "users"; %>
+        <title>Admin | <%= ontitle %></title>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <style>
+            .p-rel {
+                position: absolute;
+                width: 100%;
+                top: 0;
+            }
+            body {
+                background-color: #36393e;
+            }
+            @media (max-width: 768px) {
+                .d-flex-c {
+                    flex-direction: column;
+                }
+            }
+
+            .text-center {
+                text-align: center;
+            }
+
+            .sm-circle {
+                text-align: center;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+            }
+
+            .hf {
+                height: 80%;
+            }
+            .vhf {
+                height: 90vh;
+            }
+            .light {
+                background-color: white;
+                color: black;
+            }
+            .blue {
+                background-color: rgb(68, 93, 220);
+                color: white;
+            }
+        </style>
+    </head>
+    <body>
+<div class="container mt-5">
+    <div class="container rounded bg-dark text-white p-lg-3 p-sm-4 p-3">
+        <div class="container d-flex justify-content-between">
+            <p>Admins tools | Hello, <%= users || "users?" %></p>
+            <% if (logout) { %>
+            <a href="/admin/logout" class="bg-danger sm-circle"></a>
+            <% } %>
+        </div>
+    <div class="container light rounded py-2">

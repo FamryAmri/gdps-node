@@ -858,6 +858,11 @@ const tablesSQLITE = [
                 name: "link",
                 type: "TEXT",
                 params: "DEFAULT 'https://audio.ngfiles.com/0/1_newgrounds_consin.mp3'"
+            },
+            {
+                name: "createon",
+                type: "INTEGER",
+                params: "DEFAULT 0"
             }
         ]
     },
