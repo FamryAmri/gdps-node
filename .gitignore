@@ -1,0 +1,14 @@
+# node_modules ignored
+node_modules/
+
+# package-lock.json ignored
+package-lock.json
+
+# ignored all data
+data/database.db
+data/*.txt
+data/l/*.gz
+data/a/*.gz
+
+# configuration
+config.js
